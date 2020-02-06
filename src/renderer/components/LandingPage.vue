@@ -8,7 +8,7 @@
         <el-upload
           class="upload-demo"
           drag
-          action="https://jsonplaceholder.typicode.com/posts/"
+          action=""
           :show-file-list='false'
           :http-request="uploadfile"
           >
@@ -22,12 +22,24 @@
 </template>
 
 <script>
+// import { remote } from 'electron'
 export default {
   name: 'landing-page',
   components: {},
+  data () {
+    return {
+      datasrc: ''
+    }
+  },
   methods: {
     uploadfile: function (data) {
-      console.log(data)
+      // 打开系统本地文件或者网页链接
+      const {shell} = require('electron')
+      // Open a local file in the default app
+      shell.openItem(data.file.path)
+
+      // Open a URL in the default way
+      shell.openExternal('https://github.com')
     }
   }
 }
