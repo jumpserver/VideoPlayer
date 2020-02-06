@@ -3,8 +3,8 @@
     <img id="logo" src="~@/assets/logo.png" alt="electron-vue">
     <main>
       <div class="left-side">
+        <el-button>you can click this is not work</el-button>
         <span class="title">
-          Welcome to your new project!
         </span>
         <system-information></system-information>
       </div>
