@@ -13,7 +13,7 @@ export default new Router({
     {
       path: '/linuxplayer',
       name: 'linuxplayer',
-      component: require('@/components/player/linuxplayer').default
+      component: require('@/components/player/linuxPlayer').default
     },
     {
       path: '*',
