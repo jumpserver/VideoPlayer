@@ -43,6 +43,6 @@ branches:
 deploy:
   provider: releases
   api_key: ${GH_TOKEN}
-  file: build/jumpserver_video_player-0.0.1.*
+  file: build/Jumpserver Video Player-0.0.1.dmg
   skip_cleanup: true
   draft: true
