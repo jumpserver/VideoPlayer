@@ -1,10 +1,10 @@
 <template>
-  <div id="main">
+  <div id="main" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="解压中">
     <el-row>
-      <el-col :span="8" :offset="5">
-        <img id="logo" src="~@/assets/logo.png" alt="electron-vue" />
-      </el-col>
       <el-col :span="8" :offset="6">
+        <img id="logo" src="~@/assets/jumpserver-menu-logo.png" alt="electron-vue" />
+      </el-col>
+      <el-col :span="8" :offset="7">
         <el-upload
           class="upload-demo"
           drag
@@ -30,19 +30,27 @@ export default {
   components: {},
   data () {
     return {
+      fullscreenLoading: false
     }
   },
   methods: {
+    delay: function (t, v) {
+      return new Promise(function (resolve) {
+        setTimeout(resolve.bind(null, v), t)
+      })
+    },
     uploadfile: function (data) {
       const configDir = (electron.app || electron.remote.app).getPath('userData')
-
-      console.log(data.file.path, data, configDir)
-      compressing.gzip.uncompress(data.file.path, (configDir + '/record.replay'))
+      let filename = data.file.name.substring(0, data.file.name.length - 3)
+      compressing.gzip.uncompress(data.file.path, (configDir + '/' + filename))
         .then(files => {
-          console.log('uncompress done!')
-        }).then(
-          this.$router.push({ name: 'linuxplayer' })
-        )
+          this.fullscreenLoading = true
+          return this.delay(5000).then(() => {
+            this.fullscreenLoading = false
+            this.$router.push({ name: 'linuxplayer', params: {name: filename} })
+          }
+          )
+        })
     }
   }
 }
@@ -63,8 +71,8 @@ body {
 #main {
   background: radial-gradient(
     ellipse at top left,
-    rgba(255, 255, 255, 1) 40%,
-    rgba(229, 229, 229, 0.9) 100%
+    rgb(47, 64, 80) 40%,
+    rgb(103, 106, 108) 100%
   );
   height: 100vh;
   padding: 60px 80px;

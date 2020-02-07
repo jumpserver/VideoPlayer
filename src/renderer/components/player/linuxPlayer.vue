@@ -38,7 +38,6 @@
 <script>
 const fs = require('fs')
 const electron = require('electron')
-const configDir = (electron.app || electron.remote.app).getPath('userData')
 export default {
   name: 'linuxplayer',
   components: {},
@@ -55,30 +54,29 @@ export default {
       timeStep: 33, // 步长
       pos: 0, // 播放点
       timer: '',
-      term: '1', // 播放文字
+      term: '', // 播放文字
       percentageTime: 0
     }
   },
-  mounted: function () {
+  created: function () {
     this.loadfile()
   },
   methods: {
     loadfile: function () {
-      fs.readFile((configDir + '/record.replay'), (err, basicdata) => {
+      let configDir = (electron.app || electron.remote.app).getPath('userData')
+      fs.readFile((configDir + '/' + this.$route.params.name), (err, basicdata) => {
         this.replayData = JSON.parse(basicdata)
         this.formatdata()
         console.log(err)
       })
     },
     formatdata: function () {
-      console.log(Object.keys(this.replayData))
       this.timeList = Object.keys(this.replayData)
       this.timeList = this.timeList.sort((a, b) => {
         return a - b
       })
       this.max = this.timeList[this.timeList.length - 1] * 1000
       this.duration = this.formatTime(this.max)
-      console.log(this.max, this.duration)
       // for (let index = 0; index < this.timeList.length; index++) {
       //   this.markTimeList[parseInt(this.timeList[index] / this.max * 100)] = '输入'
       // }
