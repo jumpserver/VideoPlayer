@@ -1,5 +1,5 @@
 {
-  "name": "video",
+  "name": "jumpserver_video_player",
   "version": "0.0.1",
   "author": "OrangeM21 <orangemtony@gmail.com>",
   "description": "An electron-vue project",
@@ -21,7 +21,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "video",
+    "productName": "Jumpserver Video Player",
     "appId": "com.example.yourapp",
     "directories": {
       "output": "build"
@@ -45,7 +45,7 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "icon": "build/icons/player.icns"
     },
     "win": {
       "icon": "build/icons/icon.ico"
