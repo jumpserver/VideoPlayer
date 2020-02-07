@@ -6,10 +6,10 @@
 
 <script>
   export default {
-    name: 'video'
+    name: 'app'
   }
 </script>
 
 <style>
-  /* CSS */
+html,body,#app {height: 100%;}
 </style>
