@@ -61,7 +61,6 @@
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
-    "element-ui": "^2.13.0",
     "ajv": "^6.5.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.3",
@@ -75,6 +74,7 @@
     "cfonts": "^2.1.2",
     "chai": "^4.1.2",
     "chalk": "^2.4.1",
+    "compressing": "^1.5.0",
     "copy-webpack-plugin": "^4.5.1",
     "cross-env": "^5.1.6",
     "css-loader": "^0.28.11",
@@ -84,6 +84,7 @@
     "electron-builder": "^20.19.2",
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",
+    "element-ui": "^2.13.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^4.0.1",

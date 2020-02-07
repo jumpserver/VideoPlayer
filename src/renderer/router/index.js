@@ -7,8 +7,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'landing-page',
-      component: require('@/components/LandingPage').default
+      name: 'mainPage',
+      component: require('@/components/mainPage').default
+    },
+    {
+      path: '/linuxplayer',
+      name: 'linuxplayer',
+      component: require('@/components/player/linuxplayer').default
     },
     {
       path: '*',

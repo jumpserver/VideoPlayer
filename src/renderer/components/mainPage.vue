@@ -22,24 +22,27 @@
 </template>
 
 <script>
-// import { remote } from 'electron'
+import compressing from 'compressing'
+// import path from 'path'
+const electron = require('electron')
 export default {
-  name: 'landing-page',
+  name: 'mainPage',
   components: {},
   data () {
     return {
-      datasrc: ''
     }
   },
   methods: {
     uploadfile: function (data) {
-      // 打开系统本地文件或者网页链接
-      const {shell} = require('electron')
-      // Open a local file in the default app
-      shell.openItem(data.file.path)
+      const configDir = (electron.app || electron.remote.app).getPath('userData')
 
-      // Open a URL in the default way
-      shell.openExternal('https://github.com')
+      console.log(data.file.path, data, configDir)
+      compressing.gzip.uncompress(data.file.path, (configDir + '/record.replay'))
+        .then(files => {
+          console.log('uncompress done!')
+        }).then(
+          this.$router.push({ name: 'linuxplayer' })
+        )
     }
   }
 }
