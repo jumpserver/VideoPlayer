@@ -40,3 +40,9 @@ script:
 branches:
   only:
   - master
+deploy:
+  provider: releases
+  api_key: ${GH_TOKEN}
+  file: build/jumpserver_video_player-0.0.1.*
+  skip_cleanup: true
+  draft: true
