@@ -30,3 +30,7 @@ build_script:
   - yarn build
 
 test: off
+
+artifacts:
+  - path: build/jumpserver-video_player-setup-0.0.1.exe
+    name: JumpserverVideoPlayer
