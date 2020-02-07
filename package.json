@@ -48,7 +48,7 @@
       "icon": "build/icons/player.icns"
     },
     "win": {
-      "icon": "build/icons/player.ico"
+      "icon": "build/icons/icon.ico"
     },
     "linux": {
       "icon": "build/icons"
