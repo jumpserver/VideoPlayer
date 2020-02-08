@@ -16,6 +16,11 @@ export default new Router({
       component: require('@/components/player/linuxPlayer').default
     },
     {
+      path: '/guaplayer',
+      name: 'guaplayer',
+      component: require('@/components/player/guaPlayer').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

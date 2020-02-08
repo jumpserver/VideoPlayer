@@ -17,6 +17,13 @@
           <div class="el-upload__tip" slot="tip">只能上传录像文件，且不超过500mb</div>
         </el-upload>
       </el-col>
+      <el-col :span="8" :offset="8" style="margin-top:20px;">
+        <el-radio v-model="type" label="1">Linux录像</el-radio>
+        <el-radio v-model="type" label="2">Windows录像</el-radio>
+      </el-col>
+      <el-col :span="4" :offset="10" style="margin-top:20px;">
+        <el-button round @click="play" type="primary">播放</el-button>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -30,6 +37,8 @@ export default {
   components: {},
   data () {
     return {
+      type: '1',
+      filename: '',
       fullscreenLoading: false
     }
   },
@@ -41,16 +50,22 @@ export default {
     },
     uploadfile: function (data) {
       const configDir = (electron.app || electron.remote.app).getPath('userData')
-      let filename = data.file.name.substring(0, data.file.name.length - 3)
-      compressing.gzip.uncompress(data.file.path, (configDir + '/' + filename))
+      this.filename = data.file.name.substring(0, data.file.name.length - 3)
+      compressing.gzip.uncompress(data.file.path, (configDir + '/' + this.filename))
         .then(files => {
           this.fullscreenLoading = true
           return this.delay(5000).then(() => {
             this.fullscreenLoading = false
-            this.$router.push({ name: 'linuxplayer', params: {name: filename} })
           }
           )
         })
+    },
+    play: function () {
+      if (this.type === '1') {
+        this.$router.push({ name: 'linuxplayer', params: {name: this.filename} })
+      } else {
+        this.$router.push({ name: 'guaplayer', params: {name: this.filename} })
+      }
     }
   }
 }

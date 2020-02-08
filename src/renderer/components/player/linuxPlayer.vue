@@ -6,13 +6,13 @@
         <el-button round @click="$router.push({name:'mainPage'})" size="small">返回</el-button>
       </el-col>
       <el-col :span="2" :offset="4">
-        <el-button round @click="speedDown" icon="el-icon-d-arrow-left" size="small">取消</el-button>
+        <el-button round @click="speedDown" disable icon="el-icon-d-arrow-left" size="small">取消</el-button>
       </el-col>
       <el-col :span="3">
         <el-button round @click="toggle" icon="el-icon-video-play" size="small">播放/暂停</el-button>
       </el-col>
       <el-col :span="2">
-        <el-button round @click="speedUp" icon="el-icon-d-arrow-right" size="small">快进</el-button>
+        <el-button round @click="speedUp" disable icon="el-icon-d-arrow-right" size="small">快进</el-button>
       </el-col>
       <el-col :span="2">
         <el-button round @click="restart" icon="el-icon-refresh-right" size="small">重置</el-button>
@@ -29,7 +29,6 @@
     </el-row>
   </div>
   <el-main class="terminal">
-    <div></div>
     <pre>{{term}}</pre>
   </el-main> 
 </div>
