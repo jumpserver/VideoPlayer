@@ -1,10 +1,10 @@
 <template>
   <div id="main" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="解压中">
     <el-row>
-      <el-col :span="8" :offset="6">
+      <el-col :lg="{span:8,offset:8}" :md="{span:8,offset:6}">
         <img id="logo" src="~@/assets/jumpserver-menu-logo.png" alt="electron-vue" />
       </el-col>
-      <el-col :span="8" :offset="7">
+      <el-col :lg="{span:8,offset:9}" :md="{span:8,offset:7}">
         <el-upload
           class="upload-demo"
           drag
@@ -17,11 +17,11 @@
           <div class="el-upload__tip" slot="tip">只能上传录像文件，且不超过500mb</div>
         </el-upload>
       </el-col>
-      <el-col :span="8" :offset="8" style="margin-top:20px;">
+      <el-col :lg="{span:8,offset:10}" :md="{span:8,offset:9}" style="margin-top:20px;">
         <el-radio v-model="type" label="1">Linux录像</el-radio>
         <el-radio v-model="type" label="2">Windows录像</el-radio>
       </el-col>
-      <el-col :span="4" :offset="10" style="margin-top:20px;">
+      <el-col :lg="{span:4,offset:12}" :md="{span:4,offset:11}" style="margin-top:20px;">
         <el-button round @click="play" type="primary">播放</el-button>
       </el-col>
     </el-row>
@@ -38,6 +38,7 @@ export default {
   data () {
     return {
       type: '1',
+      ispushed: false,
       filename: '',
       fullscreenLoading: false
     }
@@ -56,11 +57,16 @@ export default {
           this.fullscreenLoading = true
           return this.delay(5000).then(() => {
             this.fullscreenLoading = false
+            this.ispushed = true
           }
           )
         })
     },
     play: function () {
+      if (!this.ispushed) {
+        this.$message.error('请先上传文件')
+        return
+      }
       if (this.type === '1') {
         this.$router.push({ name: 'linuxplayer', params: {name: this.filename} })
       } else {

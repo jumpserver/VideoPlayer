@@ -158,6 +158,7 @@ export default {
         this.isPlaying = false
       }
       this.recording.play()
+      this.display.scale(0.85)
       this.max = this.recording.getDuration()
       this.duration = this.formatTime(this.max)
     },
