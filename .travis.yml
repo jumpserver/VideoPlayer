@@ -46,7 +46,7 @@ deploy:
   file: build/Jumpserver Video Player-0.0.1.dmg
   skip_cleanup: true
   draft: true
-  on:
-    tags: true
+  # on:
+  #   tags: true
 notifications:
   email: false
