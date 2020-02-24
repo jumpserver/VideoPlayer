@@ -28,13 +28,15 @@
       </el-col>
     </el-row>
   </div>
-  <el-main class="terminal">
-    <pre>{{term}}</pre>
-  </el-main> 
+
+    <div id="terminal" ref="terminal" style="padding-left:20px;"></div>
+
 </div>
 </template>
 
 <script>
+import { Terminal } from 'xterm'
+import { FitAddon } from 'xterm-addon-fit'
 const fs = require('fs')
 const electron = require('electron')
 export default {
@@ -54,7 +56,10 @@ export default {
       pos: 0, // 播放点
       timer: '',
       term: '', // 播放文字
-      percentageTime: 0
+      xterm: null,
+      percentageTime: 0,
+      termCols: 80,
+      termRows: 24
     }
   },
   created: function () {
@@ -63,7 +68,7 @@ export default {
   methods: {
     loadfile: function () {
       let configDir = (electron.app || electron.remote.app).getPath('userData')
-      fs.readFile((configDir + '/' + this.$route.params.name), (err, basicdata) => {
+      fs.readFile((configDir + '/' + this.$route.params.name), 'utf-8', (err, basicdata) => {
         this.replayData = JSON.parse(basicdata)
         this.formatdata()
         console.log(err)
@@ -95,6 +100,7 @@ export default {
       this.time = 0
       this.percentageTime = 0
       this.isPlaying = true
+      this.xterm.reset()
       this.timer = setInterval(() => {
         this.advance()
       }, this.tick)
@@ -153,6 +159,7 @@ export default {
       for (; this.pos < this.timeList.length; this.pos++) {
         if (this.timeList[this.pos] * 1000 <= this.time) {
           this.term = this.term + (this.replayData[this.timeList[this.pos]])
+          this.xterm.write(this.replayData[this.timeList[this.pos]])
         } else {
           break
         }
@@ -189,26 +196,46 @@ export default {
       }
       this.advance()
     }
+  },
+  mounted: function () {
+    let terminalContainer = this.$refs.terminal
+    this.xterm = new Terminal(
+      {
+        fontFamily: 'monaco, Consolas, "Lucida Console", monospace',
+        lineHeight: 1.2,
+        fontSize: 15,
+        rightClickSelectsWord: true,
+        theme: {
+          background: '#1f1b1b'
+        }
+      })
+    const fitAddon = new FitAddon()
+    this.xterm.loadAddon(fitAddon)
+    this.xterm.open(terminalContainer)
+    this.xterm.fit()
+    this.xterm.resize(this.termCols, this.termRows)
+    this.xterm.scrollToBottom()
+  },
+  beforeDestroy: function () {
+    this.xterm.destroy()
   }
+
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
+@import "/node_modules/xterm/css/xterm.css";
 .content{
   height: 100%;
 }
+
 .header{
   padding-top: 15px;
 }
-.terminal{
-  cursor: text;
+#terminal{
+  // cursor: text;
   width: 100%;
+  background: #1f1b1b;
   height: calc(100% - 85px);
-  background-color: #676a6c;
 }
-.terminal > pre {
-  color: #ffffff;
-  font-size: 15px;
-  line-height: 1.5;
-  text-align: left;
-}
+.xterm-viewport::-webkit-scrollbar { width: 0 !important }
 </style>
