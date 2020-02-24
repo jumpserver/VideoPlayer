@@ -210,7 +210,7 @@ export default {
     const fitAddon = new FitAddon()
     this.xterm.loadAddon(fitAddon)
     this.xterm.open(terminalContainer)
-    this.xterm.fit()
+    fitAddon.fit()
     this.xterm.scrollToBottom()
   },
   beforeDestroy: function () {
