@@ -57,9 +57,7 @@ export default {
       timer: '',
       term: '', // 播放文字
       xterm: null,
-      percentageTime: 0,
-      termCols: 80,
-      termRows: 24
+      percentageTime: 0
     }
   },
   created: function () {
@@ -213,7 +211,6 @@ export default {
     this.xterm.loadAddon(fitAddon)
     this.xterm.open(terminalContainer)
     this.xterm.fit()
-    this.xterm.resize(this.termCols, this.termRows)
     this.xterm.scrollToBottom()
   },
   beforeDestroy: function () {
