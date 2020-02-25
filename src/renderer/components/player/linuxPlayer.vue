@@ -182,6 +182,8 @@ export default {
       this.speed -= 1
     },
     runFrom: function () {
+      this.xterm.reset()
+      this.term = ''
       for (let i = 0; i < this.timeList.length; i++) {
         const v = this.timeList[i]
         const preTime = this.timeList[i - 1]
