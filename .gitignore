@@ -9,3 +9,5 @@ yarn.lock
 npm-debug.log.*
 thumbs.db
 !.gitkeep
+package-lock.json
+yarn.lock

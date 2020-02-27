@@ -10,7 +10,7 @@
           drag
           action=""
           :show-file-list='false'
-          :http-request="uploadfile"
+          :http-request="checkfiletype"
           >
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -32,6 +32,8 @@
 import compressing from 'compressing'
 // import path from 'path'
 const electron = require('electron')
+const decompress = require('decompress')
+const decompressTargz = require('decompress-targz')
 export default {
   name: 'mainPage',
   components: {},
@@ -40,7 +42,10 @@ export default {
       type: '1',
       ispushed: false,
       filename: '',
-      fullscreenLoading: false
+      fullscreenLoading: false,
+      version: null
+      // version 1 旧版本
+      // version 2 新版本
     }
   },
   methods: {
@@ -48,6 +53,42 @@ export default {
       return new Promise(function (resolve) {
         setTimeout(resolve.bind(null, v), t)
       })
+    },
+    // 解压文件
+    // 1. 解压tar.gz
+    // 2. 解压gz
+    checkfiletype: function (data) {
+      const configDir = (electron.app || electron.remote.app).getPath('userData')
+      if (data.file.name.substring(data.file.name.length - 2, data.file.name.length) === 'gz') {
+        if (data.file.name.substring(data.file.name.length - 6, data.file.name.length - 3) === 'tar') {
+          decompress(data.file.path, configDir, {
+            plugins: [
+              decompressTargz()
+            ]
+          }).then(() => {
+            this.version = 2
+            this.filename = data.file.name.substring(0, data.file.name.length - 7)
+            console.log(this.filename, configDir)
+            compressing.gzip.uncompress((configDir + '/' + this.filename + '/' + this.filename + '.relay.gz'), (configDir + '/' + this.filename + '/' + this.filename))
+              .then(files => {
+                this.fullscreenLoading = true
+                return this.delay(5000).then(() => {
+                  this.fullscreenLoading = false
+                  this.ispushed = true
+                }
+                )
+              })
+          })
+        } else {
+          this.version = 1
+          this.uploadfile(data)
+        }
+      } else {
+
+      }
+    },
+    unzipfile: function () {
+
     },
     uploadfile: function (data) {
       const configDir = (electron.app || electron.remote.app).getPath('userData')
@@ -68,9 +109,9 @@ export default {
         return
       }
       if (this.type === '1') {
-        this.$router.push({ name: 'linuxplayer', params: {name: this.filename} })
+        this.$router.push({ name: 'linuxplayer', params: {name: this.filename, version: this.version} })
       } else {
-        this.$router.push({ name: 'guaplayer', params: {name: this.filename} })
+        this.$router.push({ name: 'guaplayer', params: {name: this.filename, version: this.version} })
       }
     }
   }

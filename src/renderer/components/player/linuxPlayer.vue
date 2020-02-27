@@ -57,7 +57,9 @@ export default {
       timer: '',
       term: '', // 播放文字
       xterm: null,
-      percentageTime: 0
+      percentageTime: 0,
+      videopeth: null,
+      jsonpeth: null
     }
   },
   created: function () {
@@ -66,6 +68,13 @@ export default {
   methods: {
     loadfile: function () {
       let configDir = (electron.app || electron.remote.app).getPath('userData')
+      if (this.$route.params.version === '1') {
+        this.videopeth = (configDir + '/' + this.$route.params.name)
+      } else if (this.$route.params.version === '2') {
+        this.videopeth = (configDir + '/' + this.$route.params.name)
+        this.jsonpeth = (configDir + '/' + this.$route.params.name)
+      }
+
       fs.readFile((configDir + '/' + this.$route.params.name), 'utf-8', (err, basicdata) => {
         this.replayData = JSON.parse(basicdata)
         this.formatdata()
