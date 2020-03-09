@@ -79,7 +79,6 @@ export default {
       let configDir = (electron.app || electron.remote.app).getPath('userData')
       this.videopeth = (configDir + '/' + this.$route.params.name)
       this.jsonpeth = (configDir + '/' + this.$route.params.name + '.json')
-      console.log(configDir + '/' + this.$route.params.name)
       fs.readFile(this.videopeth, 'utf-8', (err, basicdata) => {
         this.replayData = JSON.parse(basicdata)
         this.formatdata()
@@ -91,7 +90,6 @@ export default {
       // eslint-disable-next-line handle-callback-err
       fs.readFile(this.jsonpeth, 'utf-8', (err, basicdata) => {
         let jsonData = JSON.parse(basicdata)
-        console.log(jsonData)
         let date = new Date(Date.parse(jsonData.date_start))
         this.date_start = date.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
         this.asset = jsonData.asset

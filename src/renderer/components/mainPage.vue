@@ -89,7 +89,6 @@ export default {
 
     },
     uploadfile: function (filename, filepath) {
-      console.log(filename, filepath)
       const configDir = (electron.app || electron.remote.app).getPath('userData')
       compressing.gzip.uncompress(filepath, (configDir + '/' + filename))
         .then(files => {
