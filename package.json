@@ -1,6 +1,6 @@
 {
   "name": "jumpserver_video_player",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "OrangeM21 <orangemtony@gmail.com>",
   "description": "An electron-vue project",
   "license": null,

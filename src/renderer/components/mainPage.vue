@@ -41,7 +41,7 @@ export default {
       ispushed: false,
       filename: '',
       fullscreenLoading: false,
-      version: null
+      version: Number
       // version 1 旧版本
       // version 2 新版本
     }
@@ -61,10 +61,12 @@ export default {
         this.filename = data.file.name.substring(0, data.file.name.length - 4)
         compressing.tar.uncompress(data.file.path, configDir).then((files) => {
           this.uploadfile(this.filename, (configDir + '/' + this.filename + '.replay.gz'))
+          this.version = 2
         })
       } else if (data.file.name.substring(data.file.name.length - 2, data.file.name.length) === 'gz') {
         this.filename = data.file.name.substring(0, data.file.name.length - 6)
         this.uploadfile(this.filename, data.file.path)
+        this.version = 1
       } else {
         this.$message.error('录像文件错误')
       }

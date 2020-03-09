@@ -20,7 +20,7 @@
       <el-col :span="2" :offset="2">
       <p style="line-height:32px;text-aligin:center;">{{this.position}}/{{this.duration}}</p>
       </el-col>
-      <el-col :span="2" :offset="2">
+      <el-col :span="2" :offset="2" :v-if="this.version_internal === 2">
         <el-tooltip placement="top" style="line-height:32px;">
           <div slot="content">资产名: {{this.asset}}<br/>开始时间: {{this.date_start}}<br/>用户: {{this.admin_user}}</div>
           <i class="el-icon-warning"></i>
@@ -60,7 +60,8 @@ export default {
       position: '00:00',
       asset: '',
       date_start: '',
-      admin_user: ''
+      admin_user: '',
+      version_internal: Number
     }
   },
   created: function () {
@@ -96,14 +97,18 @@ export default {
         this.initRecording()
         console.log(err)
       })
-      // eslint-disable-next-line handle-callback-err
-      fs.readFile(jsonpeth, 'utf-8', (err, basicdata) => {
-        let jsonData = JSON.parse(basicdata)
-        let date = new Date(Date.parse(jsonData.date_start))
-        this.date_start = date.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
-        this.asset = jsonData.asset
-        this.admin_user = jsonData.user
-      })
+      this.version_internal = 1
+      if (this.$route.params.version === 2) {
+        this.version_internal = 2
+        // eslint-disable-next-line handle-callback-err
+        fs.readFile(jsonpeth, 'utf-8', (err, basicdata) => {
+          let jsonData = JSON.parse(basicdata)
+          let date = new Date(Date.parse(jsonData.date_start))
+          this.date_start = date.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
+          this.asset = jsonData.asset
+          this.admin_user = jsonData.user
+        })
+      }
     },
     zeroPad: function (num, minLength) {
       let str = num.toString()
