@@ -58,29 +58,13 @@ export default {
     checkfiletype: function (data) {
       const configDir = (electron.app || electron.remote.app).getPath('userData')
       if (data.file.name.substring(data.file.name.length - 3, data.file.name.length) === 'tar') {
-        // if (data.file.name.substring(data.file.name.length - , data.file.name.length - 3) === 'tar') {
-        //   decompress(data.file.path, configDir, {
-        //     plugins: [
-        //       decompressTargz()
-        //     ]
-        //   }).then(() => {
-        //     this.version = 2
-        //     this.filename = data.file.name.substring(0, data.file.name.length - 7)
-        //     compressing.gzip.uncompress((configDir + '/' + this.filename + '/' + this.filename + '.relay.gz'), (configDir + '/' + this.filename + '/' + this.filename))
-        // .then(files => {
-        //   this.fullscreenLoading = true
-        //   return this.delay(5000).then(() => {
-        //     this.fullscreenLoading = false
-        //     this.ispushed = true
-        //   }
-        //   )
-        // })
-        //   })
-        // }
         this.filename = data.file.name.substring(0, data.file.name.length - 4)
         compressing.tar.uncompress(data.file.path, configDir).then((files) => {
           this.uploadfile(this.filename, (configDir + '/' + this.filename + '.replay.gz'))
         })
+      } else if (data.file.name.substring(data.file.name.length - 2, data.file.name.length) === 'gz') {
+        this.filename = data.file.name.substring(0, data.file.name.length - 6)
+        this.uploadfile(this.filename, data.file.path)
       } else {
         this.$message.error('录像文件错误')
       }
