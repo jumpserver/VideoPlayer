@@ -20,7 +20,7 @@
       <el-col :span="2" :offset="2">
       <p style="line-height:32px;text-aligin:center;">{{this.position}}/{{this.duration}}</p>
       </el-col>
-            <el-col :span="2">
+      <el-col :span="2" :offset="2">
         <el-tooltip placement="top" style="line-height:32px;">
           <div slot="content">资产名: {{this.asset}}<br/>开始时间: {{this.date_start}}<br/>用户: {{this.admin_user}}</div>
           <i class="el-icon-warning"></i>
