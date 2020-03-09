@@ -32,8 +32,6 @@
 import compressing from 'compressing'
 // import path from 'path'
 const electron = require('electron')
-const decompress = require('decompress')
-const decompressTargz = require('decompress-targz')
 export default {
   name: 'mainPage',
   components: {},
@@ -59,41 +57,41 @@ export default {
     // 2. 解压gz
     checkfiletype: function (data) {
       const configDir = (electron.app || electron.remote.app).getPath('userData')
-      if (data.file.name.substring(data.file.name.length - 2, data.file.name.length) === 'gz') {
-        if (data.file.name.substring(data.file.name.length - 6, data.file.name.length - 3) === 'tar') {
-          decompress(data.file.path, configDir, {
-            plugins: [
-              decompressTargz()
-            ]
-          }).then(() => {
-            this.version = 2
-            this.filename = data.file.name.substring(0, data.file.name.length - 7)
-            console.log(this.filename, configDir)
-            compressing.gzip.uncompress((configDir + '/' + this.filename + '/' + this.filename + '.relay.gz'), (configDir + '/' + this.filename + '/' + this.filename))
-              .then(files => {
-                this.fullscreenLoading = true
-                return this.delay(5000).then(() => {
-                  this.fullscreenLoading = false
-                  this.ispushed = true
-                }
-                )
-              })
-          })
-        } else {
-          this.version = 1
-          this.uploadfile(data)
-        }
+      if (data.file.name.substring(data.file.name.length - 3, data.file.name.length) === 'tar') {
+        // if (data.file.name.substring(data.file.name.length - , data.file.name.length - 3) === 'tar') {
+        //   decompress(data.file.path, configDir, {
+        //     plugins: [
+        //       decompressTargz()
+        //     ]
+        //   }).then(() => {
+        //     this.version = 2
+        //     this.filename = data.file.name.substring(0, data.file.name.length - 7)
+        //     compressing.gzip.uncompress((configDir + '/' + this.filename + '/' + this.filename + '.relay.gz'), (configDir + '/' + this.filename + '/' + this.filename))
+        // .then(files => {
+        //   this.fullscreenLoading = true
+        //   return this.delay(5000).then(() => {
+        //     this.fullscreenLoading = false
+        //     this.ispushed = true
+        //   }
+        //   )
+        // })
+        //   })
+        // }
+        this.filename = data.file.name.substring(0, data.file.name.length - 4)
+        compressing.tar.uncompress(data.file.path, configDir).then((files) => {
+          this.uploadfile(this.filename, (configDir + '/' + this.filename + '.replay.gz'))
+        })
       } else {
-
+        this.$message.error('录像文件错误')
       }
     },
     unzipfile: function () {
 
     },
-    uploadfile: function (data) {
+    uploadfile: function (filename, filepath) {
+      console.log(filename, filepath)
       const configDir = (electron.app || electron.remote.app).getPath('userData')
-      this.filename = data.file.name.substring(0, data.file.name.length - 3)
-      compressing.gzip.uncompress(data.file.path, (configDir + '/' + this.filename))
+      compressing.gzip.uncompress(filepath, (configDir + '/' + filename))
         .then(files => {
           this.fullscreenLoading = true
           return this.delay(5000).then(() => {

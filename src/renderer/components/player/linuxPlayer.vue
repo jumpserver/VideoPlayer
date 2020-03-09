@@ -5,7 +5,7 @@
       <el-col :span="2" :offset="1">
         <el-button round @click="$router.push({name:'mainPage'})" size="small">返回</el-button>
       </el-col>
-      <el-col :span="2" :offset="4">
+      <el-col :span="2" :offset="2">
         <el-button round @click="speedDown" disable icon="el-icon-d-arrow-left" size="small">取消</el-button>
       </el-col>
       <el-col :span="3">
@@ -23,12 +23,17 @@
       <el-col :span="4">
        <p style="line-height:32px;text-aligin:center;">当前播放速度:{{this.speed}}倍</p>
       </el-col>
+      <el-col :span="2">
+        <el-tooltip placement="top" style="line-height:32px;">
+          <div slot="content">资产名: {{this.asset}}<br/>开始时间: {{this.date_start}}<br/>用户: {{this.admin_user}}</div>
+          <i class="el-icon-warning"></i>
+        </el-tooltip>
+      </el-col>
       <el-col :span="20" :offset="2">
         <el-slider v-model="percentageTime" @change="runFrom" :format-tooltip="formatTooltip" :min="0" :max="100"></el-slider>
       </el-col>
     </el-row>
   </div>
-
     <div id="terminal" ref="terminal" style="padding-left:20px;"></div>
 
 </div>
@@ -59,7 +64,11 @@ export default {
       xterm: null,
       percentageTime: 0,
       videopeth: null,
-      jsonpeth: null
+      jsonpeth: null,
+      starttime: '',
+      asset: '',
+      date_start: '',
+      admin_user: ''
     }
   },
   created: function () {
@@ -68,17 +77,25 @@ export default {
   methods: {
     loadfile: function () {
       let configDir = (electron.app || electron.remote.app).getPath('userData')
-      if (this.$route.params.version === '1') {
-        this.videopeth = (configDir + '/' + this.$route.params.name)
-      } else if (this.$route.params.version === '2') {
-        this.videopeth = (configDir + '/' + this.$route.params.name)
-        this.jsonpeth = (configDir + '/' + this.$route.params.name)
-      }
-
-      fs.readFile((configDir + '/' + this.$route.params.name), 'utf-8', (err, basicdata) => {
+      this.videopeth = (configDir + '/' + this.$route.params.name)
+      this.jsonpeth = (configDir + '/' + this.$route.params.name + '.json')
+      console.log(configDir + '/' + this.$route.params.name)
+      fs.readFile(this.videopeth, 'utf-8', (err, basicdata) => {
         this.replayData = JSON.parse(basicdata)
         this.formatdata()
         console.log(err)
+      })
+
+      // const date = new Date(Date.parse(this.replay.date_start));
+      // this.starttime = date.toLocaleString('zh-CN', { hour12: false }).split('/').join('-');
+      // eslint-disable-next-line handle-callback-err
+      fs.readFile(this.jsonpeth, 'utf-8', (err, basicdata) => {
+        let jsonData = JSON.parse(basicdata)
+        console.log(jsonData)
+        let date = new Date(Date.parse(jsonData.date_start))
+        this.date_start = date.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
+        this.asset = jsonData.asset
+        this.admin_user = jsonData.user
       })
     },
     formatdata: function () {

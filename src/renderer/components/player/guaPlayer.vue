@@ -5,7 +5,7 @@
       <el-col :span="2" :offset="1">
         <el-button round @click="$router.push({name:'mainPage'})" size="small">返回</el-button>
       </el-col>
-      <el-col :span="2" :offset="4">
+      <el-col :span="2" :offset="2">
         <el-button round disabled icon="el-icon-d-arrow-left"  size="small">取消</el-button>
       </el-col>
       <el-col :span="3">
@@ -19,6 +19,12 @@
       </el-col>
       <el-col :span="2" :offset="2">
       <p style="line-height:32px;text-aligin:center;">{{this.position}}/{{this.duration}}</p>
+      </el-col>
+            <el-col :span="2">
+        <el-tooltip placement="top" style="line-height:32px;">
+          <div slot="content">资产名: {{this.asset}}<br/>开始时间: {{this.date_start}}<br/>用户: {{this.admin_user}}</div>
+          <i class="el-icon-warning"></i>
+        </el-tooltip>
       </el-col>
       <el-col :span="20" :offset="2">
         <el-slider v-model="percentageTime" @change="runFrom" :format-tooltip="formatTooltip" :min="0" :max="100"></el-slider>
@@ -51,7 +57,10 @@ export default {
       percent: 0,
       spend: 0,
       duration: '00:00',
-      position: '00:00'
+      position: '00:00',
+      asset: '',
+      date_start: '',
+      admin_user: ''
     }
   },
   created: function () {
@@ -84,6 +93,15 @@ export default {
         this.recording.connect(this.replayData)
         this.initRecording()
         console.log(err)
+      })
+      // eslint-disable-next-line handle-callback-err
+      fs.readFile(this.jsonpeth, 'utf-8', (err, basicdata) => {
+        let jsonData = JSON.parse(basicdata)
+        console.log(jsonData)
+        let date = new Date(Date.parse(jsonData.date_start))
+        this.date_start = date.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
+        this.asset = jsonData.asset
+        this.admin_user = jsonData.user
       })
     },
     zeroPad: function (num, minLength) {
