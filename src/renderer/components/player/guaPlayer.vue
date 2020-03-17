@@ -102,7 +102,12 @@ export default {
         this.version_internal = 2
         // eslint-disable-next-line handle-callback-err
         fs.readFile(jsonpeth, 'utf-8', (err, basicdata) => {
-          let jsonData = JSON.parse(basicdata)
+          let jsonData
+          try {
+            jsonData = JSON.parse(basicdata)
+          } catch (e) {
+            this.$message.error('播放错误')
+          }
           let date = new Date(Date.parse(jsonData.date_start))
           this.date_start = date.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
           this.asset = jsonData.asset

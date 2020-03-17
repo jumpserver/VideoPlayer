@@ -1,6 +1,6 @@
 {
-  "name": "jumpserver_video_player",
-  "version": "0.1.2",
+  "name": "jumperver_video_player",
+  "version": "0.1.3",
   "author": "OrangeM21 <orangemtony@gmail.com>",
   "description": "An electron-vue project",
   "license": null,
@@ -21,7 +21,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "Jumpserver Video Player",
+    "productName": "JumpServer Video Player",
     "appId": "com.example.yourapp",
     "directories": {
       "output": "build"

@@ -17,11 +17,11 @@
           <div class="el-upload__tip" slot="tip">只能上传录像文件，且不超过500mb</div>
         </el-upload>
       </el-col>
-      <el-col :lg="{span:8,offset:10}" :md="{span:8,offset:9}" style="margin-top:20px;">
+      <el-col  v-if="version === 1" :lg="{span:8,offset:10}" :md="{span:8,offset:9}" style="margin-top:20px;">
         <el-radio v-model="type" label="1">Linux录像</el-radio>
         <el-radio v-model="type" label="2">Windows录像</el-radio>
       </el-col>
-      <el-col :lg="{span:4,offset:12}" :md="{span:4,offset:11}" style="margin-top:20px;">
+      <el-col  v-if="version === 1" :lg="{span:4,offset:12}" :md="{span:4,offset:11}" style="margin-top:20px;">
         <el-button round @click="play" type="primary">播放</el-button>
       </el-col>
     </el-row>
@@ -31,6 +31,7 @@
 <script>
 import compressing from 'compressing'
 // import path from 'path'
+const fs = require('fs')
 const electron = require('electron')
 export default {
   name: 'mainPage',
@@ -41,7 +42,8 @@ export default {
       ispushed: false,
       filename: '',
       fullscreenLoading: false,
-      version: Number
+      version: Number,
+      jsonData: ''
       // version 1 旧版本
       // version 2 新版本
     }
@@ -60,13 +62,13 @@ export default {
       if (data.file.name.substring(data.file.name.length - 3, data.file.name.length) === 'tar') {
         this.filename = data.file.name.substring(0, data.file.name.length - 4)
         compressing.tar.uncompress(data.file.path, configDir).then((files) => {
-          this.uploadfile(this.filename, (configDir + '/' + this.filename + '.replay.gz'))
           this.version = 2
+          this.uploadfile(this.filename, (configDir + '/' + this.filename + '.replay.gz'))
         })
       } else if (data.file.name.substring(data.file.name.length - 2, data.file.name.length) === 'gz') {
         this.filename = data.file.name.substring(0, data.file.name.length - 6)
-        this.uploadfile(this.filename, data.file.path)
         this.version = 1
+        this.uploadfile(this.filename, data.file.path)
       } else {
         this.$message.error('录像文件错误')
       }
@@ -79,9 +81,25 @@ export default {
       compressing.gzip.uncompress(filepath, (configDir + '/' + filename))
         .then(files => {
           this.fullscreenLoading = true
+          if (this.version === 2) {
+            let jsonpeth = (configDir + '/' + this.filename + '.json')
+            fs.readFile(jsonpeth, 'utf-8', (_, basicdata) => {
+              try {
+                this.jsonData = JSON.parse(basicdata)
+              } catch (e) {
+                this.$message.error('Json解析错误')
+              }
+              if (this.jsonData.protocol === 'rdp') {
+                this.type = '2'
+              } else { this.type = '1' }
+            })
+          }
           return this.delay(5000).then(() => {
             this.fullscreenLoading = false
             this.ispushed = true
+            if (this.version === 1) {
+              this.$message.warning('1.5.6以前版本的录像，请选择录像类型')
+            } else { this.play() }
           }
           )
         })
