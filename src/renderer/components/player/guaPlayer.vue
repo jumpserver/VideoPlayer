@@ -22,7 +22,7 @@
       </el-col>
       <el-col :span="2" :offset="2" :v-if="this.version_internal === 2">
         <el-tooltip placement="top" style="line-height:32px;">
-          <div slot="content">资产名: {{this.asset}}<br/>开始时间: {{this.date_start}}<br/>用户: {{this.admin_user}}</div>
+          <div slot="content">资产名: {{this.asset}}<br/>用户: {{this.admin_user}}<br/>系统用户: {{this.system_user}}<br/>开始时间: {{this.date_start}}</div>
           <i class="el-icon-warning"></i>
         </el-tooltip>
       </el-col>
@@ -61,6 +61,7 @@ export default {
       asset: '',
       date_start: '',
       admin_user: '',
+      system_user: '',
       version_internal: Number
     }
   },
@@ -111,6 +112,7 @@ export default {
           let date = new Date(Date.parse(jsonData.date_start))
           this.date_start = date.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
           this.asset = jsonData.asset
+          this.system_user = jsonData.system_user
           this.admin_user = jsonData.user
         })
       }
