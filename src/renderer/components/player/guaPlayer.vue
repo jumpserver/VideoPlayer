@@ -22,7 +22,7 @@
       </el-col>
       <el-col :span="2" :offset="2" :v-if="this.version_internal === 2">
         <el-tooltip placement="top" style="line-height:32px;">
-          <div slot="content">资产名: {{this.asset}}<br/>用户: {{this.admin_user}}<br/>系统用户: {{this.system_user}}<br/>开始时间: {{this.date_start}}</div>
+          <div slot="content">资产名: {{this.asset}}<br/>用户: {{this.admin_user}}<br/>系统用户: {{this.system_user}}<br/>开始时间: {{this.date_start}}<br/>结束时间: {{this.date_end}}</div>
           <i class="el-icon-warning"></i>
         </el-tooltip>
       </el-col>
@@ -33,9 +33,9 @@
   </div>
   <div>
     <el-col :span="22" :offset="1" class="terminal">
-    <div ref="display" @click="play"></div> 
+    <div ref="display" @click="play"></div>
     </el-col>
-  </div> 
+  </div>
 </div>
 </template>
 
