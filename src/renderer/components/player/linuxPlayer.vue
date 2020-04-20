@@ -68,6 +68,7 @@ export default {
       starttime: '',
       asset: '',
       date_start: '',
+      date_end: '',
       admin_user: '',
       system_user: '',
       version_internal: ''
@@ -108,8 +109,10 @@ export default {
           } catch (e) {
             this.$message.error('播放错误')
           }
-          let date = new Date(Date.parse(jsonData.date_start))
-          this.date_start = date.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
+          let dateStart = new Date(Date.parse(jsonData.date_start))
+          let dataEnd = new Date(Date.parse(jsonData.date_end))
+          this.date_start = dateStart.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
+          this.date_end = dataEnd.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
           this.asset = jsonData.asset
           this.system_user = jsonData.system_user
           this.admin_user = jsonData.user
