@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "decompress": "^4.2.0",
+    "decompress": "^4.2.1",
     "decompress-targz": "^4.1.1",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
