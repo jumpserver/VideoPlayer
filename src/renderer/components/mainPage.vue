@@ -103,6 +103,9 @@ export default {
           }
           )
         })
+        .catch(() => {
+          this.$message.error('压缩和录像文件不符, 请重试')
+        })
     },
     play: function () {
       if (!this.ispushed) {
