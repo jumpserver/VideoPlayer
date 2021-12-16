@@ -24,7 +24,12 @@ function createWindow () {
     useContentSize: true,
     width: 1000,
     minWidth: 1000,
-    minHeight: 661
+    minHeight: 661,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false
+    }
   })
 
   mainWindow.loadURL(winURL)
