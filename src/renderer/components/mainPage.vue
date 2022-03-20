@@ -2,7 +2,7 @@
   <div id="main" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="解压中">
     <el-row>
       <el-col :lg="{span:8,offset:8}" :md="{span:8,offset:6}">
-        <img id="logo" src="~@/assets/jumpserver-menu-logo.png" alt="electron-vue" />
+        <img id="logo" src="@/assets/jumpserver-menu-logo.png" alt="electron-vue" />
       </el-col>
       <el-col :lg="{span:8,offset:9}" :md="{span:8,offset:7}">
         <el-upload
@@ -38,7 +38,7 @@ export default {
   components: {},
   data () {
     return {
-      type: '1',
+      type: '0',
       ispushed: false,
       filename: '',
       fullscreenLoading: false,
@@ -63,7 +63,14 @@ export default {
         this.filename = data.file.name.substring(0, data.file.name.length - 4)
         compressing.tar.uncompress(data.file.path, configDir).then((files) => {
           this.version = 2
-          this.uploadfile(this.filename, (configDir + '/' + this.filename + '.replay.gz'))
+          const exists = fs.existsSync((configDir + '/' + this.filename + '.replay.gz'))
+          if (exists) {
+            this.type = '1'
+            this.uploadfile(this.filename, (configDir + '/' + this.filename + '.replay.gz'))
+          } else {
+            this.type = '0'
+            this.uploadfile(this.filename, (configDir + '/' + this.filename + '.cast.gz'))
+          }
         })
       } else if (data.file.name.substring(data.file.name.length - 2, data.file.name.length) === 'gz') {
         this.filename = data.file.name.substring(0, data.file.name.length - 6)
@@ -82,6 +89,7 @@ export default {
         .then(files => {
           this.fullscreenLoading = true
           if (this.version === 2) {
+            console.log('uploadfile')
             let jsonpeth = (configDir + '/' + this.filename + '.json')
             fs.readFile(jsonpeth, 'utf-8', (_, basicdata) => {
               try {
@@ -91,7 +99,7 @@ export default {
               }
               if (this.jsonData.protocol === 'rdp') {
                 this.type = '2'
-              } else { this.type = '1' }
+              }
             })
           }
           return this.delay(5000).then(() => {
@@ -112,7 +120,9 @@ export default {
         this.$message.error('请先上传文件')
         return
       }
-      if (this.type === '1') {
+      if (this.type === '0') {
+        this.$router.push({ name: 'asciicastplayer', params: {name: this.filename, version: this.version} })
+      } else if (this.type === '1') {
         this.$router.push({ name: 'linuxplayer', params: {name: this.filename, version: this.version} })
       } else {
         this.$router.push({ name: 'guaplayer', params: {name: this.filename, version: this.version} })

@@ -20,11 +20,11 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 661,
+    height: 600,
     useContentSize: true,
-    width: 1000,
-    minWidth: 1000,
-    minHeight: 661,
+    width: 1024,
+    minWidth: 1024,
+    minHeight: 600,
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,

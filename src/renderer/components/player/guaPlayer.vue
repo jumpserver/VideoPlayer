@@ -18,7 +18,7 @@
         <el-button round icon="el-icon-refresh-right" @click="restart" size="small">重置</el-button>
       </el-col>
       <el-col :span="2" :offset="2">
-      <p style="line-height:32px;text-aligin:center;">{{this.position}}/{{this.duration}}</p>
+        <p style="line-height:1.5;text-aligin:center;">{{this.position}}/{{this.duration}}</p>
       </el-col>
       <el-col :span="2" :offset="2" :v-if="this.version_internal === 2">
         <el-tooltip placement="top" style="line-height:32px;">
@@ -32,9 +32,7 @@
     </el-row>
   </div>
   <div>
-    <el-col :span="22" :offset="1" class="terminal">
-    <div ref="display" @click="play"></div>
-    </el-col>
+    <div class="terminal center" ref="display" @click="play" ></div>
   </div>
 </div>
 </template>
@@ -237,8 +235,14 @@ export default {
 .header{
   padding-top: 15px;
 }
+.center{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:justify;
+}
 .terminal{
-  width: 100%;
+  width: auto;
   height: calc(100% - 85px);
 }
 </style>

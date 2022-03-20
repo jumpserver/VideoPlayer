@@ -21,6 +21,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
+    "asar": false,
     "productName": "JumpServer Video Player",
     "appId": "com.example.yourapp",
     "directories": {
@@ -84,7 +85,7 @@
     "del": "^3.0.0",
     "devtron": "^1.4.0",
     "electron": "^13.1.6",
-    "electron-builder": "^20.19.2",
+    "electron-builder": "22.10.5",
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-rebuild": "^3.2.5",

@@ -17,11 +17,11 @@
       <el-col :span="2">
         <el-button round @click="restart" icon="el-icon-refresh-right" size="small">重置</el-button>
       </el-col>
-      <el-col :span="2" :offset="2">
-      <p style="line-height:32px;text-aligin:center;">{{this.formatTime(this.time)}}/{{this.duration}}</p>
+      <el-col :span="2" :offset="1">
+       <p style="line-height:1.5; text-aligin:center;">{{this.formatTime(this.time)}}/{{this.duration}}</p>
       </el-col>
-      <el-col :span="4">
-       <p style="line-height:32px;text-aligin:center;">当前播放速度:{{this.speed}}倍</p>
+      <el-col :span="4" :offset="1">
+       <p style="line-height:1.5; text-aligin:center;">当前播放速度:{{this.speed}}倍</p>
       </el-col>
       <el-col :span="2" :v-if="this.version_internal === 2">
         <el-tooltip placement="top" style="line-height:32px;" >
@@ -34,8 +34,7 @@
       </el-col>
     </el-row>
   </div>
-    <div id="terminal" ref="terminal" style="padding-left:20px;"></div>
-
+  <div id="terminal" ref="terminal" style="padding-left:20px;"></div>
 </div>
 </template>
 
@@ -250,7 +249,7 @@ export default {
       {
         fontFamily: 'monaco, Consolas, "Lucida Console", monospace',
         lineHeight: 1.2,
-        fontSize: 15,
+        fontSize: 14,
         rightClickSelectsWord: true,
         theme: {
           background: '#1f1b1b'
@@ -293,13 +292,13 @@ export default {
 }
 
 .xterm .xterm-helper-textarea {
-    /*
-     * HACK: to fix IE's blinking cursor
-     * Move textarea out of the screen to the far left, so that the cursor is not visible.
-     */
+    padding: 0;
+    border: 0;
+    margin: 0;
+    /* Move textarea out of the screen to the far left, so that the cursor is not visible */
     position: absolute;
     opacity: 0;
-    left: -9999em;
+    left: -9999em ;
     top: 0;
     width: 0;
     height: 0;
