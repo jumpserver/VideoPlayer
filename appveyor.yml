@@ -22,6 +22,7 @@ init:
 install:
   - ps: Install-Product node 10 x64
   - git reset --hard HEAD
+  - yarn config set ignore-engines true
   - yarn
   - node --version
 
