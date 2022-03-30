@@ -22,6 +22,7 @@ init:
 install:
   - ps: Install-Product node 10 x64
   - git reset --hard HEAD
+  - yarn config set ignore-engines true
   - yarn
   - node --version
 
@@ -32,5 +33,5 @@ build_script:
 test: off
 
 artifacts:
-  - path: build\Jumpserver Video Player Setup 0.1.4.exe
+  - path: build\Jumpserver Video Player Setup 0.1.5.exe
     name: JumpserverVideoPlayer

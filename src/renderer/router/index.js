@@ -11,6 +11,11 @@ export default new Router({
       component: require('@/components/mainPage').default
     },
     {
+      path: '/asciicastplayer',
+      name: 'asciicastplayer',
+      component: require('@/components/player/asciicastPlayer').default
+    },
+    {
       path: '/linuxplayer',
       name: 'linuxplayer',
       component: require('@/components/player/linuxPlayer').default
