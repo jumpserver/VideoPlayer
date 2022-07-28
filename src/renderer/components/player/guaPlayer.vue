@@ -21,7 +21,7 @@
         </el-tooltip>
       </el-col>
       <el-col :span="20" :offset="2">
-        <el-slider v-model="percent" @change="runFrom" :format-tooltip="formatTooltip" min="0" :max="max"></el-slider>
+        <el-slider v-model="percent" @change="runFrom" :format-tooltip="formatTooltip" :min="0" :max="max"></el-slider>
       </el-col>
     </el-row>
   </div>
