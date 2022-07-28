@@ -5,14 +5,8 @@
       <el-col :span="2" :offset="1">
         <el-button round @click="$router.push({name:'mainPage'})" size="small">返回</el-button>
       </el-col>
-      <el-col :span="2" :offset="2">
-        <el-button round disabled icon="el-icon-d-arrow-left"  size="small">取消</el-button>
-      </el-col>
       <el-col :span="3">
         <el-button round icon="el-icon-video-play" @click="play" size="small">播放/暂停</el-button>
-      </el-col>
-      <el-col :span="2">
-        <el-button round disabled icon="el-icon-d-arrow-right"  size="small">快进</el-button>
       </el-col>
       <el-col :span="2">
         <el-button round icon="el-icon-refresh-right" @click="restart" size="small">重置</el-button>
@@ -27,10 +21,14 @@
         </el-tooltip>
       </el-col>
       <el-col :span="20" :offset="2">
-        <el-slider v-model="percentageTime" @change="runFrom" :format-tooltip="formatTooltip" :min="0" :max="100"></el-slider>
+        <el-slider v-model="percent" @change="runFrom" :format-tooltip="formatTooltip" min="0" :max="max"></el-slider>
       </el-col>
     </el-row>
   </div>
+  <LoadingProgress
+      :percentage="percentage"
+      :is-show-loading-progress="isShowLoadingProgress"
+  />
   <div>
     <div class="terminal center" ref="display" @click="play" ></div>
   </div>
@@ -39,21 +37,27 @@
 
 <script>
 import * as Guacamole from 'guacamole-common-js-jumpserver/dist/guacamole-common'
+import LoadingProgress from '../LoadingProgress'
+
 const fs = require('fs')
 const electron = require('electron')
 export default {
   name: 'guaplayer',
-  components: {},
+  components: {
+    LoadingProgress
+  },
   data () {
     return {
-      replayData: '',
+      percentage: 0,
+      originalPosition: 0,
+      destinationPosition: 0,
+      isShowLoadingProgress: false,
+      calcInterval: '',
       fullscreenLoading: true,
       recording: '',
       display: '',
-      recordingDisplay: '',
       max: 100,
       percent: 0,
-      spend: 0,
       duration: '00:00',
       position: '00:00',
       asset: '',
@@ -64,22 +68,18 @@ export default {
       version_internal: Number
     }
   },
-  created: function () {
+  mounted: function () {
     this.loadfile()
   },
   methods: {
-    debugelement: function () {
-
-    },
-    formatTooltip: function (time) {
-      return this.formatTime(time / 100 * this.max)
+    formatTooltip: function () {
+      return this.formatTime(this.percent)
     },
     loadfile: function () {
       let configDir = (electron.app || electron.remote.app).getPath('userData')
-      let videopeth = (configDir + '/' + this.$route.params.name)
-      let jsonpeth = (configDir + '/' + this.$route.params.name + '.json')
-      fs.readFile(videopeth, 'utf-8', (err, basicdata) => {
-        this.replayData = basicdata
+      let videoPath = (configDir + '/' + this.$route.params.name)
+      let jsonPath = (configDir + '/' + this.$route.params.name + '.json')
+      fs.readFile(videoPath, 'utf-8', (err, data) => {
         const tunnel = new Guacamole.StaticHTTPTunnel()
         this.recording = new Guacamole.SessionRecording(tunnel)
         this.display = this.recording.getDisplay()
@@ -93,7 +93,7 @@ export default {
           e.returnValue = false
         })
         this.fullscreenLoading = false
-        this.recording.connect(this.replayData)
+        this.recording.connect(data)
         this.initRecording()
         console.log(err)
       })
@@ -101,12 +101,12 @@ export default {
       if (this.$route.params.version === 2) {
         this.version_internal = 2
         // eslint-disable-next-line handle-callback-err
-        fs.readFile(jsonpeth, 'utf-8', (err, basicdata) => {
+        fs.readFile(jsonPath, 'utf-8', (err, data) => {
           let jsonData
           try {
-            jsonData = JSON.parse(basicdata)
+            jsonData = JSON.parse(data)
           } catch (e) {
-            this.$message.error('播放错误')
+            this.$message.error('视频摘要文件解析错误')
           }
           let dateStart = new Date(Date.parse(jsonData.date_start))
           let dataEnd = new Date(Date.parse(jsonData.date_end))
@@ -163,29 +163,13 @@ export default {
       this.recording.onplay = () => {
         this.isPlaying = true
       }
-      this.recording.onresize = (width, height) => {
-        console.log(width, height)
-      // Do not scale if displayRef has no width
-        // if (!height) {
-        //   return
-        // }
-        // Scale displayRef to fit width of container
-        // const widthScale = this.displayRef.offsetWidth / width
-        // const heightScale = this.displayRef.offsetHeight / height
-        // const minScale = widthScale < heightScale ? widthScale : heightScale
-        // this.recordingDisplay.scale(minScale)
-      }
       this.recording.onseek = (millis) => {
         this.position = this.formatTime(millis)
         this.percent = millis
       }
-
-      this.recording.onprogress = (millis) => {
-        this.duration = this.formatTime(millis)
-        this.max = millis
+      this.recording.onprogress = () => {
         this.play()
       }
-      // If paused, the play/pause button should read "Play"
       this.recording.onpause = () => {
         this.isPlaying = false
       }
@@ -199,12 +183,25 @@ export default {
       this.runFrom()
     },
     runFrom: function () {
-      // this.recording.seek(this.percentageTime / 100 * this.max)
-      this.recording.seek(this.percentageTime / 100 * this.max, () => {})
+      this.isShowLoadingProgress = true
+      this.destinationPosition = this.percent
+      this.originalPosition = this.recording.getPosition()
+      this.percentage = 0
+      this.recording.seek(this.percent, () => {
+        this.percentage = 100
+        this.isShowLoadingProgress = false
+        if (this.calcInterval) {
+          clearInterval(this.calcInterval)
+          this.calcInterval = ''
+        }
+      })
+      this.calculateProgress()
     },
-    cancelSeek: function (e) {
-      this.recording.play()
-      e.stopPropagation()
+    calculateProgress: function () {
+      this.calcInterval = setInterval(() => {
+        const currentPosition = this.recording.getPosition()
+        this.percentage = Math.ceil((currentPosition - this.originalPosition) / (this.destinationPosition - this.originalPosition) * 100)
+      }, 1000)
     },
     play: function () {
       if (!this.recording.isPlaying()) {
@@ -213,16 +210,6 @@ export default {
       } else {
         this.recording.pause()
         this.isPlaying = false
-      }
-    }
-  },
-  computed: {
-    percentageTime: {
-      get () {
-        return this.percent / this.max * 100
-      },
-      set () {
-
       }
     }
   }
