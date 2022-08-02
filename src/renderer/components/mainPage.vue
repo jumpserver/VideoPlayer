@@ -1,10 +1,26 @@
 <template>
-  <div id="main" v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="解压中">
+  <div
+    id="main"
+    v-loading.fullscreen.lock="fullscreenLoading"
+    element-loading-text="解压中"
+  >
     <el-row>
-      <el-col :lg="{span:8,offset:8}" :md="{span:8,offset:6}">
-        <img id="logo" src="@/assets/jumpserver-menu-logo.png" alt="electron-vue" />
+      <el-col
+        class="main-col"
+        :lg="{span:8,offset:8}"
+        :md="{span:8,offset:6}"
+      >
+        <img
+          id="logo"
+          src="@/assets/jumpserver-menu-logo.png"
+          alt="electron-vue"
+        />
       </el-col>
-      <el-col :lg="{span:8,offset:9}" :md="{span:8,offset:7}">
+      <el-col
+        class="main-col"
+        :lg="{span:8,offset:9}"
+        :md="{span:8,offset:7}"
+      >
         <el-upload
           class="upload-demo"
           drag
@@ -12,16 +28,30 @@
           :show-file-list='false'
           :http-request="checkfiletype"
           >
-          <i class="el-icon-upload"></i>
-          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-          <div class="el-upload__tip" slot="tip">只能上传录像文件，且不超过500mb</div>
+          <i class="el-icon-upload" />
+          <div class="el-upload__text">
+            将文件拖到此处，或<em>点击上传</em>
+          </div>
+          <div class="el-upload__tip" slot="tip">
+            只能上传录像文件，且不超过500mb
+          </div>
         </el-upload>
       </el-col>
-      <el-col  v-if="version === 1" :lg="{span:8,offset:10}" :md="{span:8,offset:9}" style="margin-top:20px;">
+      <el-col
+        v-if="version === 1"
+        :lg="{span:8,offset:10}"
+        :md="{span:8,offset:9}"
+        style="margin-top:20px;"
+      >
         <el-radio v-model="type" label="1">Linux录像</el-radio>
         <el-radio v-model="type" label="2">Windows录像</el-radio>
       </el-col>
-      <el-col  v-if="version === 1" :lg="{span:4,offset:12}" :md="{span:4,offset:11}" style="margin-top:20px;">
+      <el-col
+        v-if="version === 1"
+        :lg="{span:4,offset:12}"
+        :md="{span:4,offset:11}"
+        style="margin-top:20px;"
+      >
         <el-button round @click="play" type="primary">播放</el-button>
       </el-col>
     </el-row>
@@ -44,8 +74,6 @@ export default {
       fullscreenLoading: false,
       version: Number,
       jsonData: ''
-      // version 1 旧版本
-      // version 2 新版本
     }
   },
   methods: {
@@ -145,18 +173,24 @@ body {
 }
 
 #main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
   background: radial-gradient(
     ellipse at top left,
     rgb(47, 64, 80) 40%,
     rgb(103, 106, 108) 100%
   );
-  height: 100vh;
-  padding: 60px 80px;
-  width: 100vw;
 }
 #logo {
   height: auto;
-  margin-bottom: 20px;
   width: 420px;
+  margin-top: -20px;
+  margin-bottom: 20px;
+}
+.main-col {
+  text-align: center;
 }
 </style>
