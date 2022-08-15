@@ -26,7 +26,7 @@
           drag
           action=""
           :show-file-list='false'
-          :http-request="checkfiletype"
+          :http-request="checkFileType"
           >
           <i class="el-icon-upload" />
           <div class="el-upload__text">
@@ -69,7 +69,7 @@ export default {
   data () {
     return {
       type: '0',
-      ispushed: false,
+      isPushed: false,
       filename: '',
       fullscreenLoading: false,
       version: Number,
@@ -85,66 +85,68 @@ export default {
     // 解压文件
     // 1. 解压tar.gz
     // 2. 解压gz
-    checkfiletype: function (data) {
+    checkFileType: function (data) {
       const configDir = (electron.app || electron.remote.app).getPath('userData')
-      if (data.file.name.substring(data.file.name.length - 3, data.file.name.length) === 'tar') {
-        this.filename = data.file.name.substring(0, data.file.name.length - 4)
+      const fileName = data.file.name
+      const fileNameLength = fileName.length
+      if (fileName.substring(fileNameLength - 3, fileNameLength) === 'tar') {
+        this.filename = fileName.substring(0, fileNameLength - 4)
         compressing.tar.uncompress(data.file.path, configDir).then((files) => {
           this.version = 2
-          const exists = fs.existsSync((configDir + '/' + this.filename + '.replay.gz'))
+          let condensedFile = (configDir + '/' + this.filename + '.replay.gz')
+          const exists = fs.existsSync(condensedFile)
           if (exists) {
             this.type = '1'
-            this.uploadfile(this.filename, (configDir + '/' + this.filename + '.replay.gz'))
           } else {
             this.type = '0'
-            this.uploadfile(this.filename, (configDir + '/' + this.filename + '.cast.gz'))
+            condensedFile = configDir + '/' + this.filename + '.cast.gz'
           }
+          this.uploadFile(this.filename, condensedFile)
         })
-      } else if (data.file.name.substring(data.file.name.length - 2, data.file.name.length) === 'gz') {
-        this.filename = data.file.name.substring(0, data.file.name.length - 6)
+      } else if (fileName.substring(fileNameLength - 2, fileNameLength) === 'gz') {
+        this.filename = fileName.substring(0, fileNameLength - 6)
         this.version = 1
-        this.uploadfile(this.filename, data.file.path)
+        this.uploadFile(this.filename, data.file.path)
       } else {
         this.$message.error('录像文件错误')
       }
     },
-    unzipfile: function () {
+    unzipFile: function () {
 
     },
-    uploadfile: function (filename, filepath) {
+    uploadFile: function (filename, filepath) {
       const configDir = (electron.app || electron.remote.app).getPath('userData')
       compressing.gzip.uncompress(filepath, (configDir + '/' + filename))
         .then(files => {
           this.fullscreenLoading = true
           if (this.version === 2) {
-            console.log('uploadfile')
-            let jsonpeth = (configDir + '/' + this.filename + '.json')
-            fs.readFile(jsonpeth, 'utf-8', (_, basicdata) => {
+            console.log('uploadFile')
+            let jsonPath = (configDir + '/' + this.filename + '.json')
+            fs.readFile(jsonPath, 'utf-8', (_, basicData) => {
               try {
-                this.jsonData = JSON.parse(basicdata)
+                this.jsonData = JSON.parse(basicData)
               } catch (e) {
                 this.$message.error('Json解析错误')
               }
-              if (this.jsonData.protocol === 'rdp') {
+              if (this.jsonData.protocol === 'rdp' || this.jsonData.protocol === 'vnc') {
                 this.type = '2'
               }
             })
           }
           return this.delay(5000).then(() => {
             this.fullscreenLoading = false
-            this.ispushed = true
+            this.isPushed = true
             if (this.version === 1) {
               this.$message.warning('1.5.6以前版本的录像，请选择录像类型')
             } else { this.play() }
           }
           )
-        })
-        .catch(() => {
+        }).catch(() => {
           this.$message.error('压缩和录像文件不符, 请重试')
         })
     },
     play: function () {
-      if (!this.ispushed) {
+      if (!this.isPushed) {
         this.$message.error('请先上传文件')
         return
       }
