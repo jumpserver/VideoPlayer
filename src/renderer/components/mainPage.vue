@@ -4,11 +4,11 @@
     v-loading.fullscreen.lock="fullscreenLoading"
     element-loading-text="解压中"
   >
-    <el-row>
+    <el-row type="flex" justify="center" style="flex-flow: column;">
       <el-col
         class="main-col"
-        :lg="{span:8,offset:8}"
-        :md="{span:8,offset:6}"
+        :lg="{span:24}"
+        :md="{span:24}"
       >
         <img
           id="logo"
@@ -18,8 +18,8 @@
       </el-col>
       <el-col
         class="main-col"
-        :lg="{span:8,offset:9}"
-        :md="{span:8,offset:7}"
+        :lg="{span:24}"
+        :md="{span:24}"
       >
         <el-upload
           class="upload-demo"
@@ -38,18 +38,20 @@
         </el-upload>
       </el-col>
       <el-col
+        class="main-col"
         v-if="version === 1"
-        :lg="{span:8,offset:10}"
-        :md="{span:8,offset:9}"
+        :lg="{span:24}"
+        :md="{span:24}"
         style="margin-top:20px;"
       >
         <el-radio v-model="type" label="1">Linux录像</el-radio>
         <el-radio v-model="type" label="2">Windows录像</el-radio>
       </el-col>
       <el-col
+        class="main-col"
         v-if="version === 1"
-        :lg="{span:4,offset:12}"
-        :md="{span:4,offset:11}"
+        :lg="{span:24}"
+        :md="{span:24}"
         style="margin-top:20px;"
       >
         <el-button round @click="play" type="primary">播放</el-button>
