@@ -4,23 +4,15 @@
     v-loading.fullscreen.lock="fullscreenLoading"
     element-loading-text="解压中"
   >
-    <el-row>
-      <el-col
-        class="main-col"
-        :lg="{span:8,offset:8}"
-        :md="{span:8,offset:6}"
-      >
+    <el-row style="text-align: center;">
+      <el-col class="main-col">
         <img
           id="logo"
           src="@/assets/jumpserver-menu-logo.png"
           alt="electron-vue"
         />
       </el-col>
-      <el-col
-        class="main-col"
-        :lg="{span:8,offset:9}"
-        :md="{span:8,offset:7}"
-      >
+      <el-col class="main-col">
         <el-upload
           class="upload-demo"
           drag
@@ -37,21 +29,11 @@
           </div>
         </el-upload>
       </el-col>
-      <el-col
-        v-if="version === 1"
-        :lg="{span:8,offset:10}"
-        :md="{span:8,offset:9}"
-        style="margin-top:20px;"
-      >
+      <el-col v-if="version === 1" class="margin-top">
         <el-radio v-model="type" label="1">Linux录像</el-radio>
         <el-radio v-model="type" label="2">Windows录像</el-radio>
       </el-col>
-      <el-col
-        v-if="version === 1"
-        :lg="{span:4,offset:12}"
-        :md="{span:4,offset:11}"
-        style="margin-top:20px;"
-      >
+      <el-col v-if="version === 1" class="margin-top">
         <el-button round @click="play" type="primary">播放</el-button>
       </el-col>
     </el-row>
@@ -191,6 +173,9 @@ body {
   width: 420px;
   margin-top: -20px;
   margin-bottom: 20px;
+}
+.margin-top {
+  margin-top: 20px;
 }
 .main-col {
   text-align: center;
