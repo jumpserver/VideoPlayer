@@ -6,8 +6,14 @@
         <el-button round @click="$router.push({name:'mainPage'})" size="small">返回</el-button>
       </el-col>
       <el-col :span="2" :offset="17" :v-if="this.version_internal === 2">
-        <el-tooltip placement="top" style="line-height:32px" >
-          <div slot="content">资产名: {{this.asset}}<br/>用户: {{this.admin_user}}<br/>系统用户: {{this.system_user}}<br/>开始时间: {{this.date_start}}<br/>结束时间: {{this.date_end}}</div>
+        <el-tooltip placement="top" style="line-height:32px; cursor: pointer;" >
+          <div slot="content">
+            资产名: {{this.asset}}<br/>
+            用户: {{this.admin_user}}<br/>
+            系统用户: {{this.system_user}}<br/>
+            开始时间: {{this.date_start}}<br/>
+            结束时间: {{this.date_end}}
+          </div>
           <i class="el-icon-warning"></i>
         </el-tooltip>
       </el-col>
@@ -85,7 +91,8 @@ export default {
         startAt: this.startAt,
         speed: this.speed,
         preload: true,
-        fontSize: '14px',
+        fit: false,
+        fontSize: '13px',
         autoPlay: this.isPlaying ? 1 : 0
       }
     },
@@ -132,5 +139,10 @@ export default {
 .header{
   padding-top: 15px;
   padding-bottom: 15px;
+}
+#terminal{
+  width: 100%;
+  background: #1f1b1b;
+  height: calc(100% - 62px);
 }
 </style>
