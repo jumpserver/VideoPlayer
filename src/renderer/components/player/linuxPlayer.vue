@@ -25,7 +25,13 @@
       </el-col>
       <el-col :span="2" :v-if="this.version_internal === 2">
         <el-tooltip placement="top" style="line-height:32px;" >
-          <div slot="content">资产名: {{this.asset}}<br/>用户: {{this.admin_user}}<br/>系统用户: {{this.system_user}}<br/>开始时间: {{this.date_start}}<br/>结束时间: {{this.date_end}}</div>
+          <div slot="content">
+            资产名: {{this.asset}}<br/>
+            用户: {{this.admin_user}}<br/>
+            账号: {{this.account || ''}}<br/>
+            开始时间: {{this.date_start}}<br/>
+            结束时间: {{this.date_end}}
+          </div>
           <i class="el-icon-warning"></i>
         </el-tooltip>
       </el-col>

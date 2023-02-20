@@ -15,8 +15,9 @@
 
 #terminal {
   .asciinema-player, pre {
-    height: 100%!important;
+    height: calc(100% - 20px)!important;
     width: 99%!important;
+    padding-bottom: 20px;
   }
   pre {
     overflow-y: scroll;
