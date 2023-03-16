@@ -10,7 +10,7 @@
           <div slot="content">
             资产名: {{this.asset}}<br/>
             用户: {{this.admin_user}}<br/>
-            系统用户: {{this.system_user}}<br/>
+            账号: {{this.account || ''}}<br/>
             开始时间: {{this.date_start}}<br/>
             结束时间: {{this.date_end}}
           </div>
@@ -38,7 +38,7 @@ export default {
       jsonpeth: null,
       asset: '',
       admin_user: '',
-      system_user: '',
+      account: '',
       version_internal: '',
       date_start: '',
       date_end: '',
@@ -78,7 +78,7 @@ export default {
           this.date_start = dateStart.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
           this.date_end = dataEnd.toLocaleString('zh-CN', { hour12: false }).split('/').join('-')
           this.asset = jsonData.asset
-          this.system_user = jsonData.system_user
+          this.account = jsonData.account
           this.admin_user = jsonData.user
           this.cols = window.innerWidth
           this.rows = window.innerHeight - 50
