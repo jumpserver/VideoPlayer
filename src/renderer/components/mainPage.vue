@@ -55,7 +55,7 @@ export default {
       filename: '',
       fullscreenLoading: false,
       version: Number,
-      jsonData: ''
+      jsonData: {}
     }
   },
   methods: {
@@ -107,15 +107,13 @@ export default {
             fs.readFile(jsonPath, 'utf-8', (_, basicData) => {
               try {
                 this.jsonData = JSON.parse(basicData)
+                this.isUsingGuaPlayer()
               } catch (e) {
                 this.$message.error('Json解析错误')
               }
-              if (this.jsonData.protocol === 'rdp' || this.jsonData.protocol === 'vnc') {
-                this.type = '2'
-              }
             })
           }
-          return this.delay(5000).then(() => {
+          return this.delay(1000).then(() => {
             this.fullscreenLoading = false
             this.isPushed = true
             if (this.version === 1) {
@@ -126,6 +124,14 @@ export default {
         }).catch(() => {
           this.$message.error('压缩和录像文件不符, 请重试')
         })
+    },
+    isUsingGuaPlayer () {
+      const { terminal = {}, protocol = '' } = this.jsonData
+      const types = ['lion', 'guacamole', 'razor', 'xrdp']
+      const protocols = ['rdp', 'vnc']
+      if ((terminal.type && types.includes(terminal.type)) || protocols.includes(protocol)) {
+        this.type = '2'
+      }
     },
     play: function () {
       if (!this.isPushed) {
