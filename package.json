@@ -1,6 +1,6 @@
 {
   "name": "jumperver_video_player",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "author": "OrangeM21 <orangemtony@gmail.com>",
   "description": "An electron-vue project",
   "license": null,
@@ -130,8 +130,8 @@
     "mocha": "^5.2.0",
     "multispinner": "^0.2.1",
     "node-loader": "^0.6.0",
-    "node-sass": "^4.9.2",
-    "sass-loader": "^7.0.3",
+    "sass": "^1.63.4",
+    "sass-loader": "^10.2.0",
     "style-loader": "^0.21.0",
     "url-loader": "^1.0.1",
     "vue-devtools": "^5.1.4",
