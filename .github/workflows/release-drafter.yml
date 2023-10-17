@@ -45,13 +45,13 @@ jobs:
       - name: Build Win x64
         run: |
           yarn run build:win
-          mv dist/JumpServer-VideoPlayer-v${{ steps.get_version.outputs.TAG }}.exe release/JumpServer-VideoPlayer-v${{ steps.get_version.outputs.TAG }}-win-x64.exe
+          mv dist/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}.exe release/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}-win-x64.exe
 
       - name: Build Win x86
         run: |
           rm -rf dist/*
           yarn run build:win32
-          mv dist/JumpServer-VideoPlayer-v${{ steps.get_version.outputs.TAG }}.exe release/JumpServer-VideoPlayer-v${{ steps.get_version.outputs.TAG }}-win-x86.exe
+          mv dist/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}.exe release/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}-win-x86.exe
 
       - name: Release Upload Assets
         uses: softprops/action-gh-release@v1
