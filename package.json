@@ -1,14 +1,16 @@
 {
   "name": "jumperver_video_player",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "author": "OrangeM21 <orangemtony@gmail.com>",
   "description": "An electron-vue project",
-  "license": null,
+  "license": "GPLv3",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:win": "node .electron-vue/build.js && electron-builder --win --x64",
+    "build:win32": "node .electron-vue/build.js && electron-builder --win --ia32",
+    "build:mac": "node .electron-vue/build.js && electron-builder --mac",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
     "dev": "node .electron-vue/dev-runner.js",
@@ -24,9 +26,9 @@
   "build": {
     "asar": false,
     "productName": "JumpServer Video Player",
-    "appId": "com.example.yourapp",
+    "appId": "org.jumpserver.videoplayer",
     "directories": {
-      "output": "build"
+      "output": "dist"
     },
     "nsis": {
       "oneClick": false,
@@ -56,10 +58,20 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/player.icns"
+      "icon": "build/icons/player.icns",
+      "artifactName": "JumpServer-VideoPlayer-v${version}.${ext}",
+      "target": {
+        "target": [
+          {
+            "target": "dmg"
+          }
+        ]
+      },
+      "category": "public.app-category.utilities"
     },
     "win": {
       "icon": "build/icons/player.ico",
+      "artifactName": "JumpServer-VideoPlayer-v${version}.${ext}",
       "target": [
         {
           "target": "nsis"
@@ -67,7 +79,8 @@
       ]
     },
     "linux": {
-      "icon": "build/icons"
+      "icon": "build/icons",
+      "artifactName": "JumpServer-VideoPlayer-v${version}.${ext}"
     }
   },
   "dependencies": {
@@ -103,7 +116,6 @@
     "electron-builder": "22.10.5",
     "electron-debug": "^1.5.0",
     "electron-devtools-installer": "^2.2.4",
-    "electron-rebuild": "^3.2.5",
     "element-ui": "^2.13.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
