@@ -1,7 +1,5 @@
-# Jumpserver 离线录像播放器
+# Vue 3 + TypeScript + Vite
 
-[![Build Status](https://travis-ci.com/orangemio/videoplayer-electron.svg?branch=master)](https://travis-ci.com/orangemio/videoplayer-electron)
+This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
-
-支持 Jumpserver v1.5.7 以上版本离线下载的录像播放
-
+Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
