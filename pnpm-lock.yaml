@@ -14,6 +14,9 @@ importers:
       alova:
         specifier: ^3.0.14
         version: 3.0.14
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -30,6 +33,9 @@ importers:
       '@types/node':
         specifier: ^22.5.1
         version: 22.5.1
+      '@unocss/preset-web-fonts':
+        specifier: ^0.62.3
+        version: 0.62.3
       '@vicons/antd':
         specifier: ^0.12.0
         version: 0.12.0
@@ -1543,6 +1549,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
   file-entry-cache@8.0.0:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
@@ -4326,6 +4335,8 @@ snapshots:
   fdir@6.3.0(picomatch@4.0.2):
     optionalDependencies:
       picomatch: 4.0.2
+
+  fflate@0.8.2: {}
 
   file-entry-cache@8.0.0:
     dependencies:

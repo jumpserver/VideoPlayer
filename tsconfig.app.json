@@ -14,7 +14,7 @@
     "noEmit": true,
     "jsx": "preserve",
 
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },

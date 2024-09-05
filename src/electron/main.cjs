@@ -15,8 +15,8 @@ if (existsSync(envConfigPath)) {
 
 const createWindow = async () => {
   const window = new BrowserWindow({
-    width: 1024,
-    height: 600,
+    width: 1180,
+    height: 730,
     minWidth: 1024,
     minHeight: 600,
     useContentSize: true,
