@@ -21,6 +21,11 @@ const routes: RouteRecordRaw[] = [
         name: 'linuxPlayer',
         path: 'linuxPlayer',
         component: () => import('@/views/linuxPlayer/index.vue')
+      },
+      {
+        name: 'mp4Player',
+        path: 'mp4Player/:videoUrl',
+        component: () => import('@/views/mp4Player/index.vue')
       }
     ]
   }

@@ -5,14 +5,21 @@
 <script setup lang="ts">
 // @ts-ignore
 import { PlyrVue, usePlyrVue } from 'plyr-vue';
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 
 const props = defineProps<{
   videoUrl: string;
 }>();
 
+watch(
+  () => props.videoUrl,
+  () => {
+    initVideoPlayer();
+  }
+);
+
 const [registerVideoPlayer, videoPlayerInstance] = usePlyrVue({
-  autoplay: true,
+  autoplay: false,
   clickToPlay: true,
   controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen', 'pip'],
   settings: ['quality', 'speed', 'loop'],
