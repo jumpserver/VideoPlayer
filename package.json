@@ -13,8 +13,10 @@
     "@xterm/xterm": "^5.5.0",
     "alova": "^3.0.14",
     "fflate": "^0.8.2",
+    "js-untar": "^2.0.0",
     "normalize.css": "^8.0.1",
     "pinia": "^2.2.2",
+    "plyr-vue": "^2.6.8",
     "vue": "^3.4.37",
     "vue-router": "^4.4.3"
   },

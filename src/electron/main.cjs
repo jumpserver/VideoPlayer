@@ -6,6 +6,8 @@ let envConfig;
 
 const envConfigPath = resolve(__dirname, 'env-config.json');
 
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
+
 if (existsSync(envConfigPath)) {
   envConfig = JSON.parse(readFileSync(envConfigPath, 'utf8'));
   console.log('API URL:', envConfig.VITE_BASE_URL);

@@ -23,23 +23,17 @@
 </template>
 
 <script setup lang="ts">
+import type { UploadFileInfo } from 'naive-ui';
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
 
-import type { UploadFileInfo } from 'naive-ui';
-
-import { useResolveFile } from '@/hooks/useResolveFile.ts';
-
-const { fileParser } = useResolveFile();
-
-// .gz 用户需要选择类型
-// .zip .mp4 直接播放 asc
+const emits = defineEmits<{
+  (e: 'parser', options: { file: UploadFileInfo }): void;
+}>();
 
 /**
  * change 事件的回调
  */
 const handleFileChange = (options: { file: UploadFileInfo }) => {
-  fileParser(options.file);
+  emits('parser', options);
 };
 </script>
-
-<style scoped lang="scss"></style>
