@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         name: 'asciicastPlayer',
-        path: '/asciicastPlayer/:videoUrl',
+        path: '/asciicastPlayer/:castUrl',
         component: () => import('@/views/asciinemaPlayer/index.vue')
       },
       {

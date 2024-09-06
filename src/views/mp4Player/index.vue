@@ -9,6 +9,5 @@ import Video from '@/components/Video/index.vue';
 
 const route = useRoute();
 
-// 直接绑定 videoUrl 到 route.params.videoUrl
 const videoUrl = computed(() => route.params?.videoUrl as string);
 </script>

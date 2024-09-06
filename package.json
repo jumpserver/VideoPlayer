@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cyolosecurity/asciinema-player": "3.6.3-3",
     "@xterm/xterm": "^5.5.0",
     "alova": "^3.0.14",
     "fflate": "^0.8.2",

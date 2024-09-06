@@ -84,6 +84,21 @@ const handlePlay = (videoUrl: string, type: string) => {
 
       break;
     }
+    case 'cast': {
+      showPlayer.value = true;
+
+      router.push({
+        name: 'asciicastPlayer',
+        params: { castUrl: videoUrl }
+      });
+
+      break;
+    }
+    case 'gua': {
+      // gua replay.gz
+
+      break;
+    }
 
     default: {
       showPlayer.value = false;

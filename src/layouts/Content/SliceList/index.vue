@@ -60,6 +60,7 @@ const handleClose = (e: Event, list: IVideoList) => {
  * 点击列表项开始播放
  */
 const handlePlayVideo = (list: IVideoList) => {
+  console.log('videoList', videoList);
   emits('play', list.videoUrl, list.type);
 };
 </script>

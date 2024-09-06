@@ -1,9 +1,8 @@
 // @ts-ignore
 import untar from 'js-untar';
 import { gunzipSync } from 'fflate';
-import { createDiscreteApi, darkTheme } from 'naive-ui';
-
 import type { UploadFileInfo } from 'naive-ui';
+import { createDiscreteApi, darkTheme } from 'naive-ui';
 import type { IExtractedFiles } from '@/hooks/interface';
 import { useFileStore } from '@/store/modules/fileStore.ts';
 
@@ -18,17 +17,6 @@ interface IFileParser {
   onError: () => void;
   onProgress: (e: { percent: number }) => void;
 }
-
-/**
- * 判断具体类型
- */
-const JudgmentCastType = (fileName: string) => {
-  if (fileName.includes('cast')) {
-    return true;
-  } else {
-    return false;
-  }
-};
 
 /**
  * 处理 Reader onLoad 事件
@@ -53,6 +41,7 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
     let videoUrl: string;
 
     const bufferData: ArrayBuffer = e.target?.result as ArrayBuffer;
+    // @ts-ignore
     const uint8Array = new Uint8Array(bufferData);
 
     if (fileName.includes('.tar')) {
@@ -62,27 +51,40 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
           for (const extractedFile of extractedFiles) {
             const decompressFileName: string = extractedFile.name.split('.')[1];
 
-            const isCast: boolean = JudgmentCastType(decompressFileName);
+            switch (decompressFileName) {
+              case 'json': {
+                const decoder = new TextDecoder('utf-8');
 
-            if (isCast) {
-              type = 'cast';
-              break;
-            }
+                jsonFile = JSON.parse(decoder.decode(new Uint8Array(extractedFile.buffer)));
 
-            if (!isCast) {
-              type = 'mp4';
-              switch (decompressFileName) {
-                case 'json': {
-                  const decoder = new TextDecoder('utf-8');
-                  jsonFile = JSON.parse(decoder.decode(new Uint8Array(extractedFile.buffer)));
-                  break;
+                break;
+              }
+              case 'replay': {
+                type = 'mp4';
+                const videoBuffer: Uint8Array = new Uint8Array(extractedFile.buffer);
+                const videoBlob: Blob = new Blob([videoBuffer], { type: 'video/mp4' });
+
+                videoUrl = URL.createObjectURL(videoBlob);
+
+                break;
+              }
+              case 'cast': {
+                type = 'cast';
+                try {
+                  const decompressedData = gunzipSync(new Uint8Array(extractedFile.buffer));
+
+                  const binaryString: string = Array.from(decompressedData)
+                    .map(byte => String.fromCharCode(byte))
+                    .join('');
+
+                  // btoa 只接受字符串输入，因此需要将解压的 Uint8Array 数据转为字符
+                  videoUrl = btoa(binaryString);
+                } catch (error) {
+                  message.error(`Failed to decompress .gz file: ${error}`);
+                  reject(error);
+                  return;
                 }
-                case 'replay': {
-                  const videoBuffer: Uint8Array = new Uint8Array(extractedFile.buffer);
-                  const videoBlob: Blob = new Blob([videoBuffer], { type: 'video/mp4' });
-                  videoUrl = URL.createObjectURL(videoBlob);
-                  break;
-                }
+                break;
               }
             }
           }
@@ -99,15 +101,6 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
             videoUrl
           });
         });
-    }
-
-    if (fileName.includes('.zip')) {
-    }
-
-    if (fileName.includes('.gz')) {
-      const gz = gunzipSync(uint8Array);
-
-      console.log(gz);
     }
   });
 };

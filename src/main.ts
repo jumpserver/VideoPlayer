@@ -8,6 +8,7 @@ import './index.css';
 import 'normalize.css';
 import 'virtual:uno.css';
 import './style/plyr-custom.css';
+import './style/asciinema-custom.css';
 
 const app = createApp(App);
 
