@@ -13,6 +13,9 @@ import { GlobalThemeOverrides } from 'naive-ui';
 const overrides: GlobalThemeOverrides = {
   Layout: {
     headerBorderColor: '#232527'
+  },
+  List: {
+    color: '#252627'
   }
 };
 </script>

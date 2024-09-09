@@ -19,12 +19,40 @@ interface IFileParser {
 }
 
 /**
+ * 处理 Gua 的数据流
+ */
+const handleGuaData = (buffer: ArrayBuffer): Promise<string> => {
+  // @ts-ignore
+  let binaryString = '';
+
+  // @ts-ignore
+  const chunkSize = 1024 * 1024;
+  // @ts-ignore
+  const decoder = new TextDecoder('utf-8');
+  const decompressedData: Uint8Array = gunzipSync(new Uint8Array(buffer));
+
+  console.log(buffer);
+
+  return new Promise((resolve, reject) => {
+    try {
+      const videoBlob = new Blob([decompressedData], { type: 'application/octet-stream' });
+
+      resolve(URL.createObjectURL(videoBlob));
+    } catch (error) {
+      message.error(`Failed to decompress .gz file: ${error}`);
+
+      reject('');
+    }
+  });
+};
+
+/**
  * 处理 Reader onLoad 事件
  */
 const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
   const fileStore = useFileStore();
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if (!e.target?.result) {
       notification.error({
         content: 'Error',
@@ -36,71 +64,83 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
       reject();
     }
 
-    let type: string;
-    let jsonFile: string;
-    let videoUrl: string;
+    let type: string = '';
+    let jsonFile: string = '';
+    let videoUrl: string = '';
 
     const bufferData: ArrayBuffer = e.target?.result as ArrayBuffer;
     // @ts-ignore
     const uint8Array = new Uint8Array(bufferData);
 
     if (fileName.includes('.tar')) {
-      untar(bufferData)
-        .progress(() => {})
-        .then((extractedFiles: IExtractedFiles[]) => {
-          for (const extractedFile of extractedFiles) {
-            const decompressFileName: string = extractedFile.name.split('.')[1];
+      const extractedFiles: IExtractedFiles[] = await untar(bufferData).progress(() => {});
 
-            switch (decompressFileName) {
-              case 'json': {
-                const decoder = new TextDecoder('utf-8');
+      for (const extractedFile of extractedFiles) {
+        const decompressFileName: string = extractedFile.name.split('.')[1];
 
-                jsonFile = JSON.parse(decoder.decode(new Uint8Array(extractedFile.buffer)));
+        switch (decompressFileName) {
+          case 'json': {
+            const decoder = new TextDecoder('utf-8');
 
-                break;
-              }
-              case 'replay': {
-                type = 'mp4';
-                const videoBuffer: Uint8Array = new Uint8Array(extractedFile.buffer);
-                const videoBlob: Blob = new Blob([videoBuffer], { type: 'video/mp4' });
+            jsonFile = JSON.parse(decoder.decode(new Uint8Array(extractedFile.buffer)));
 
-                videoUrl = URL.createObjectURL(videoBlob);
-
-                break;
-              }
-              case 'cast': {
-                type = 'cast';
-                try {
-                  const decompressedData = gunzipSync(new Uint8Array(extractedFile.buffer));
-
-                  const binaryString: string = Array.from(decompressedData)
-                    .map(byte => String.fromCharCode(byte))
-                    .join('');
-
-                  // btoa 只接受字符串输入，因此需要将解压的 Uint8Array 数据转为字符
-                  videoUrl = btoa(binaryString);
-                } catch (error) {
-                  message.error(`Failed to decompress .gz file: ${error}`);
-                  reject(error);
-                  return;
-                }
-                break;
-              }
-            }
+            break;
           }
+          case 'replay': {
+            const isGua = extractedFile.name.split('.')[2] === 'gz';
 
-          fileStore.setVideoList({
-            type,
-            jsonFile,
-            videoUrl,
-            name: fileName.split('.')[0]
-          });
+            // gua 的文件后缀为 replay.gz
+            if (isGua) {
+              type = 'gua';
+              const res = await handleGuaData(extractedFile.buffer);
 
-          resolve({
-            jsonFile,
-            videoUrl
-          });
-        });
+              if (res) {
+                videoUrl = res;
+              }
+
+              break;
+            }
+
+            type = 'mp4';
+            const videoBuffer: Uint8Array = new Uint8Array(extractedFile.buffer);
+            const videoBlob: Blob = new Blob([videoBuffer], { type: 'video/mp4' });
+
+            videoUrl = URL.createObjectURL(videoBlob);
+
+            break;
+          }
+          case 'cast': {
+            type = 'cast';
+            try {
+              const decompressedData: Uint8Array = gunzipSync(new Uint8Array(extractedFile.buffer));
+
+              //? 下面这种方式当数组结构太大时可能将无法转换
+              const binaryString: string = Array.from(decompressedData)
+                .map((byte: number) => String.fromCharCode(byte))
+                .join('');
+
+              //! btoa 只接受字符串输入，因此需要将解压的 Uint8Array 数据转为字符
+              videoUrl = btoa(binaryString);
+            } catch (error) {
+              message.error(`Failed to decompress .gz file: ${error}`);
+              reject(error);
+            }
+            break;
+          }
+        }
+      }
+
+      fileStore.setVideoList({
+        type,
+        jsonFile,
+        videoUrl,
+        name: fileName.split('.')[0]
+      });
+
+      resolve({
+        jsonFile,
+        videoUrl
+      });
     }
   });
 };
@@ -131,9 +171,11 @@ const fileParser = (fileInfo: UploadFileInfo, eventOptions: IFileParser): Promis
       try {
         const res = await handleFileOnLoad(e, fileName);
 
-        setTimeout(() => {
-          eventOptions.onFinish();
-        }, 300);
+        if (res) {
+          setTimeout(() => {
+            eventOptions.onFinish();
+          }, 300);
+        }
 
         resolve(res);
       } catch (e) {

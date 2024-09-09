@@ -11,3 +11,9 @@ export interface IVideoList {
 export interface IFile {
   videoList: Array<IVideoList>;
 }
+
+export type ThemeType = 'light' | 'dark';
+
+export interface ISetting {
+  theme: ThemeType;
+}

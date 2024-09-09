@@ -1,9 +1,9 @@
 <template>
-  <n-flex class="!gap-col-0">
-    <div w-65px h-screen class="bg-[#1E2022]"></div>
+  <n-flex class="!gap-col-0" h-screen>
+    <Side />
     <n-layout font="sans" h-screen class="w-[calc(100vw-65px)]">
       <n-layout-header h-75px bordered class="bg-[#17181A] border-[#232527]">
-        <Header />
+        <Header @back="handleBack" />
       </n-layout-header>
       <n-layout-content w-full class="bg-[#17181A] h-[calc(100%-75px)]">
         <n-grid x-gap="12" :cols="12" h-full>
@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import Side from './Side/index.vue';
 import Header from '@/layouts/Header/index.vue';
 import Upload from './Content/Upload/index.vue';
 import SliceList from './Content/SliceList/index.vue';
@@ -44,6 +45,13 @@ const { fileParser } = useResolveFile();
 const jsonFile = ref<string>('');
 const videoUrl = ref<string>('');
 const showPlayer = ref<boolean>(false);
+
+/**
+ * 处理返回时间
+ */
+const handleBack = () => {
+  showPlayer.value = false;
+};
 
 const handleParser = async (options: {
   file: UploadFileInfo;
@@ -96,6 +104,12 @@ const handlePlay = (videoUrl: string, type: string) => {
     }
     case 'gua': {
       // gua replay.gz
+      showPlayer.value = true;
+
+      router.push({
+        name: 'guaPlayer',
+        params: { guaUrl: videoUrl }
+      });
 
       break;
     }

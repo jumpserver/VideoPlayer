@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { i18n } from './lang';
 import { pinia } from './store';
 import { router } from './router';
 
@@ -12,6 +13,7 @@ import './style/asciinema-custom.css';
 
 const app = createApp(App);
 
+app.use(i18n);
 app.use(pinia);
 app.use(router);
 

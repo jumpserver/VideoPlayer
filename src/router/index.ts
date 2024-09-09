@@ -14,7 +14,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         name: 'guaPlayer',
-        path: 'guaPlayer',
+        path: 'guaPlayer/:guaUrl',
         component: () => import('@/views/guaPlayer/index.vue')
       },
       {
