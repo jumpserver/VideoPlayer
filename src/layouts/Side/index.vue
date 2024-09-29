@@ -13,7 +13,7 @@
         transition-all
         duration-300
         cursor-pointer
-        :component="DarkTheme20Regular"
+        :component="theme === 'light' ? MoonOutline : SunnyOutline"
         @click="handleChangeTheme"
       />
     </n-flex>
@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import Logo from '@/assets/Logo.svg';
-import { DarkTheme20Regular } from '@vicons/fluent';
+import { SunnyOutline, MoonOutline } from '@vicons/ionicons5';
 import { useSettingStore } from '@/store/modules/settingStroe.ts';
 import { storeToRefs } from 'pinia';
 
