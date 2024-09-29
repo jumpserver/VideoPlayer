@@ -1,5 +1,5 @@
 <template>
-  <plyr-vue @register="registerVideoPlayer" p-20px />
+  <plyr-vue @register="registerVideoPlayer" />
 </template>
 
 <script setup lang="ts">

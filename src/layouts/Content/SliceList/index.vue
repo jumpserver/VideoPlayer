@@ -1,6 +1,6 @@
 <template>
   <n-tabs type="segment" animated h-full pt-10px text-base>
-    <n-tab-pane name="playlists" tab="播放列表">
+    <n-tab-pane name="playlists" :tab="t('playlists')">
       <n-empty v-if="videoList.length === 0" />
       <n-list v-else hoverable clickable bordered>
         <n-list-item
@@ -31,14 +31,15 @@
         </n-list-item>
       </n-list>
     </n-tab-pane>
-    <n-tab-pane name="commandsList" tab="命令列表"> </n-tab-pane>
+    <n-tab-pane name="commandsList" :tab="t('commandsList')"> </n-tab-pane>
   </n-tabs>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
-import { useFileStore } from '@/store/modules/fileStore.ts';
 import { Close } from '@vicons/ionicons5';
+import { useFileStore } from '@/store/modules/fileStore.ts';
 import type { IVideoList } from '@/store/interface';
 
 const emits = defineEmits<{
@@ -46,6 +47,7 @@ const emits = defineEmits<{
   (e: 'show-upload'): void;
 }>();
 
+const { t } = useI18n();
 const fileStore = useFileStore();
 
 const { videoList } = storeToRefs(fileStore);

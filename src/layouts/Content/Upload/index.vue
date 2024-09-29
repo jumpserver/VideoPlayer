@@ -17,17 +17,18 @@
           <ArchiveIcon />
         </n-icon>
       </div>
-      <n-text style="font-size: 16px" text-base> 点击或者拖动文件到该区域来上传 </n-text>
+      <n-text style="font-size: 16px" text-base> {{ t('uploadTitle') }} </n-text>
       <n-p text-base depth="3" style="margin: 8px 0 0 0">
-        只能上传录像文件，且限制单次上传只能为一个文件
+        {{ t('uploadTip') }}
       </n-p>
     </n-upload-dragger>
   </n-upload>
 </template>
 
 <script setup lang="ts">
-import type { UploadFileInfo, UploadCustomRequestOptions } from 'naive-ui';
+import { useI18n } from 'vue-i18n';
 import { ArchiveOutline as ArchiveIcon } from '@vicons/ionicons5';
+import type { UploadFileInfo, UploadCustomRequestOptions } from 'naive-ui';
 
 const emits = defineEmits<{
   (
@@ -40,6 +41,8 @@ const emits = defineEmits<{
     }
   ): void;
 }>();
+
+const { t } = useI18n();
 
 /**
  * 自定义的上传事件

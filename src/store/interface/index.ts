@@ -16,4 +16,6 @@ export type ThemeType = 'light' | 'dark';
 
 export interface ISetting {
   theme: ThemeType;
+
+  lang: string;
 }

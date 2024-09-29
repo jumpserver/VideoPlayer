@@ -57,6 +57,8 @@ onMounted(async () => {
   window.electron.onFileDataEnd((_event, _chunks) => {
     loadingBuffer.value = false;
 
+    console.log(typeof _chunks);
+    console.log('chunks', _chunks);
     recording.connect(_chunks);
 
     initRecordingEvent();

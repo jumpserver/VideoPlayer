@@ -21,7 +21,7 @@
       <n-h6 m-unset text-13px>
         <n-text flex items-center>
           <n-tag round :bordered="false" size="small" type="success">
-            用户 {{ jsonFile?.user }}
+            {{ t('user') }} : {{ jsonFile?.user }}
             <template #icon>
               <n-icon :component="UserAvatarFilledAlt" />
             </template>
@@ -31,9 +31,29 @@
       <n-h6 m-unset text-13px>
         <n-text perfx="bar" flex items-center>
           <n-tag round :bordered="false" size="small" type="success">
-            资产名称 {{ jsonFile?.asset }}
+            {{ t('asset') }} : {{ jsonFile?.asset }}
             <template #icon>
               <n-icon :component="ComputerRound" />
+            </template>
+          </n-tag>
+        </n-text>
+      </n-h6>
+      <n-h6 m-unset text-13px>
+        <n-text perfx="bar" flex items-center>
+          <n-tag round :bordered="false" size="small" type="success">
+            {{ t('duration') }} : {{ jsonFile?.duration }}
+            <template #icon>
+              <n-icon :component="AccessTimeSharp" />
+            </template>
+          </n-tag>
+        </n-text>
+      </n-h6>
+      <n-h6 m-unset text-13px>
+        <n-text perfx="bar" flex items-center>
+          <n-tag round :bordered="false" size="small" type="success">
+            {{ t('protocol') }} : {{ jsonFile?.protocol }}
+            <template #icon>
+              <n-icon :component="ProtocolHandler24Regular" />
             </template>
           </n-tag>
         </n-text>
@@ -47,23 +67,24 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { ArrowBack } from '@vicons/ionicons5';
-import { ComputerRound } from '@vicons/material';
 import { UserAvatarFilledAlt } from '@vicons/carbon';
+import { ComputerRound, AccessTimeSharp } from '@vicons/material';
+import { ProtocolHandler24Regular } from '@vicons/fluent';
 
 interface IJsonFile {
-  user: string;
+  user?: string;
 
-  asset: string;
+  asset?: string;
 
-  command_amount: number;
+  command_amount?: number;
 
-  date_end: string;
+  date_end?: string;
 
-  date_start: string;
+  date_start?: string;
 
-  duration: string;
+  duration?: string;
 
-  protocol: string;
+  protocol?: string;
 }
 
 const props = defineProps<{
