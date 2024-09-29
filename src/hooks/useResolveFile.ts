@@ -1,10 +1,11 @@
 // @ts-ignore
 import untar from 'js-untar';
 import { gunzipSync } from 'fflate';
-import type { UploadFileInfo } from 'naive-ui';
 import { createDiscreteApi, darkTheme } from 'naive-ui';
-import type { IExtractedFiles } from '@/hooks/interface';
 import { useFileStore } from '@/store/modules/fileStore.ts';
+
+import type { UploadFileInfo } from 'naive-ui';
+import type { IExtractedFiles } from '@/hooks/interface';
 
 const { notification, message } = createDiscreteApi(['notification', 'message'], {
   configProviderProps: {
@@ -21,27 +22,21 @@ interface IFileParser {
 /**
  * 处理 Gua 的数据流
  */
-const handleGuaData = (buffer: ArrayBuffer): Promise<string> => {
-  // @ts-ignore
-  let binaryString = '';
-
-  // @ts-ignore
-  const chunkSize = 1024 * 1024;
-  // @ts-ignore
-  const decoder = new TextDecoder('utf-8');
-  const decompressedData: Uint8Array = gunzipSync(new Uint8Array(buffer));
-
-  console.log(buffer);
-
+const handleGuaData = (buffer: ArrayBuffer, fileName: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     try {
-      const videoBlob = new Blob([decompressedData], { type: 'application/octet-stream' });
-
-      resolve(URL.createObjectURL(videoBlob));
-    } catch (error) {
-      message.error(`Failed to decompress .gz file: ${error}`);
-
-      reject('');
+      window.electron
+        .writeFile(buffer, fileName)
+        .then(filePath => {
+          console.log(`File written successfully at ${filePath}`);
+          resolve(filePath);
+        })
+        .catch(err => {
+          console.error(`Failed to write file: ${err}`);
+          reject(err);
+        });
+    } catch (e) {
+      console.log(e);
     }
   });
 };
@@ -65,8 +60,8 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
     }
 
     let type: string = '';
-    let jsonFile: string = '';
     let videoUrl: string = '';
+    let jsonFile: object = {};
 
     const bufferData: ArrayBuffer = e.target?.result as ArrayBuffer;
     // @ts-ignore
@@ -92,7 +87,7 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
             // gua 的文件后缀为 replay.gz
             if (isGua) {
               type = 'gua';
-              const res = await handleGuaData(extractedFile.buffer);
+              const res = await handleGuaData(extractedFile.buffer, extractedFile.name);
 
               if (res) {
                 videoUrl = res;

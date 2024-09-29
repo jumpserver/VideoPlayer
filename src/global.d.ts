@@ -5,4 +5,6 @@ declare global {
   }
 }
 
+declare module '@glokon/guacamole-common-js';
+
 export {};

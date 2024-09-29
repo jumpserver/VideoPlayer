@@ -2,10 +2,10 @@
   <n-flex class="!gap-col-0" h-screen>
     <Side />
     <n-layout font="sans" h-screen class="w-[calc(100vw-65px)]">
-      <n-layout-header h-75px bordered class="bg-[#17181A] border-[#232527]">
-        <Header @back="handleBack" />
+      <n-layout-header flex w-full h-75px bordered main-bg-base>
+        <Header @back="handleBack" :json-file="currentPartJsonFile" />
       </n-layout-header>
-      <n-layout-content w-full class="bg-[#17181A] h-[calc(100%-75px)]">
+      <n-layout-content w-full px="20px" main-bg-base class="h-[calc(100%-75px)]">
         <n-grid x-gap="12" :cols="12" h-full>
           <n-gi :span="8">
             <n-flex h-full justify="center" align="center">
@@ -45,12 +45,14 @@ const { fileParser } = useResolveFile();
 const jsonFile = ref<string>('');
 const videoUrl = ref<string>('');
 const showPlayer = ref<boolean>(false);
+const currentPartJsonFile = ref({});
 
 /**
  * 处理返回时间
  */
 const handleBack = () => {
   showPlayer.value = false;
+  currentPartJsonFile.value = {};
 };
 
 const handleParser = async (options: {
@@ -79,11 +81,13 @@ const handleParser = async (options: {
  *
  * @param videoUrl
  * @param type
+ * @param jsonFile
  */
-const handlePlay = (videoUrl: string, type: string) => {
+const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
   switch (type) {
     case 'mp4': {
       showPlayer.value = true;
+      currentPartJsonFile.value = jsonFile;
 
       router.push({
         name: 'mp4Player',
@@ -128,6 +132,7 @@ const handlePlay = (videoUrl: string, type: string) => {
 const handleShowUpload = () => {
   setTimeout(() => {
     showPlayer.value = false;
+    currentPartJsonFile.value = {};
   }, 100);
 };
 </script>

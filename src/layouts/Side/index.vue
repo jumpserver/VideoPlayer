@@ -1,13 +1,35 @@
 <template>
-  <div w-65px h-full class="bg-[#333333]">
-    <n-flex justify="center" align="end" flex-col pos-absolute bottom-20px>
-      <!-- <n-icon :component="SettingsAdjust" size="24" color="#fff" cursor-pointer />-->
+  <div w-65px flex flex-col items-center justify-between h-full side-bg-base>
+    <n-flex mt-20px>
+      <n-image :src="Logo" :height="34" :width="34" :preview-disabled="true" cursor-pointer />
+    </n-flex>
+    <n-flex mb-20px>
+      <n-icon
+        size="24"
+        p-5px
+        icon-hover
+        text-base
+        rounded-5px
+        transition-all
+        duration-300
+        cursor-pointer
+        :component="DarkTheme20Regular"
+        @click="handleChangeTheme"
+      />
     </n-flex>
   </div>
 </template>
 
 <script setup lang="ts">
-// import { SettingsAdjust } from '@vicons/carbon';
-</script>
+import Logo from '@/assets/Logo.svg';
+import { DarkTheme20Regular } from '@vicons/fluent';
+import { useSettingStore } from '@/store/modules/settingStroe.ts';
+import { storeToRefs } from 'pinia';
 
-<style scoped></style>
+const settingStore = useSettingStore();
+const { theme } = storeToRefs(settingStore);
+
+const handleChangeTheme = () => {
+  settingStore.setTheme(theme.value === 'light' ? 'dark' : 'light');
+};
+</script>

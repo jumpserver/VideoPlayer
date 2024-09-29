@@ -23,6 +23,7 @@
     "vue-router": "^4.4.3"
   },
   "devDependencies": {
+    "@types/electron": "^1.6.10",
     "@types/node": "^22.5.1",
     "@unocss/preset-web-fonts": "^0.62.3",
     "@vicons/antd": "^0.12.0",

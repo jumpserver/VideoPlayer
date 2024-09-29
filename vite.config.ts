@@ -17,13 +17,10 @@ export default defineConfig(({ mode }) => {
   //@ts-ignore
   const env = loadEnv(mode, process.cwd());
 
-  console.log(env.VITE_BASE_URL);
-
   return {
     plugins: [
       vue(),
       UnoCSS(),
-
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia']
       }),

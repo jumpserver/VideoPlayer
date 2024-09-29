@@ -1,21 +1,24 @@
 <template>
   <n-upload
-    pl-20px
-    h-500px
+    flex
+    h-full
+    flex-col
+    items-center
+    justify-center
     multiple
     directory-dnd
     :max="1"
     :custom-request="handleCustomRequest"
-    :trigger-style="{ width: '100%', height: '90%' }"
+    :trigger-style="{ width: '100%', height: '85%' }"
   >
-    <n-upload-dragger flex flex-col justify-center items-center h-full>
+    <n-upload-dragger flex flex-col justify-center items-center h-full upload-bg-base>
       <div mb-12px>
-        <n-icon size="48" :depth="3">
+        <n-icon size="48" text-base :depth="3">
           <ArchiveIcon />
         </n-icon>
       </div>
-      <n-text style="font-size: 16px"> 点击或者拖动文件到该区域来上传 </n-text>
-      <n-p depth="3" style="margin: 8px 0 0 0">
+      <n-text style="font-size: 16px" text-base> 点击或者拖动文件到该区域来上传 </n-text>
+      <n-p text-base depth="3" style="margin: 8px 0 0 0">
         只能上传录像文件，且限制单次上传只能为一个文件
       </n-p>
     </n-upload-dragger>
@@ -55,3 +58,9 @@ const handleCustomRequest = ({
   emits('parser', { file, onError, onFinish, onProgress });
 };
 </script>
+
+<style scoped lang="scss">
+:deep(.n-upload-file-list) {
+  width: 100%;
+}
+</style>

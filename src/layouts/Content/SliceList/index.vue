@@ -1,31 +1,38 @@
 <template>
-  <n-list hoverable clickable bordered m-20px h-500px w-full>
-    <template #header>
-      <n-text> 播放列表： </n-text>
-    </template>
-    <n-list-item v-for="(list, index) of videoList" :key="list.name" @click="handlePlayVideo(list)">
-      <n-popover trigger="hover">
-        <template #trigger>
-          {{ `Part ${index + 1}` }}
-        </template>
-        {{ list.name }}
-      </n-popover>
-      <template #suffix>
-        <n-flex h-full p-5px justify="center" align="center">
-          <n-button
-            text
-            @click="
-              (e: Event) => {
-                handleClose(e, list);
-              }
-            "
-          >
-            <n-icon size="14" :component="Close" />
-          </n-button>
-        </n-flex>
-      </template>
-    </n-list-item>
-  </n-list>
+  <n-tabs type="segment" animated h-full pt-10px text-base>
+    <n-tab-pane name="playlists" tab="播放列表">
+      <n-empty v-if="videoList.length === 0" />
+      <n-list v-else hoverable clickable bordered>
+        <n-list-item
+          v-for="(list, index) of videoList"
+          :key="list.name"
+          @click="handlePlayVideo(list)"
+        >
+          <n-popover trigger="hover">
+            <template #trigger>
+              {{ `Part ${index + 1}` }}
+            </template>
+            {{ list.name }}
+          </n-popover>
+          <template #suffix>
+            <n-flex h-full p-5px justify="center" align="center">
+              <n-button
+                text
+                @click="
+                  (e: Event) => {
+                    handleClose(e, list);
+                  }
+                "
+              >
+                <n-icon size="14" :component="Close" />
+              </n-button>
+            </n-flex>
+          </template>
+        </n-list-item>
+      </n-list>
+    </n-tab-pane>
+    <n-tab-pane name="commandsList" tab="命令列表"> </n-tab-pane>
+  </n-tabs>
 </template>
 
 <script setup lang="ts">
@@ -35,7 +42,7 @@ import { Close } from '@vicons/ionicons5';
 import type { IVideoList } from '@/store/interface';
 
 const emits = defineEmits<{
-  (e: 'play', videoUrl: string, type: string): void;
+  (e: 'play', videoUrl: string, type: string, jsonFile: object): void;
   (e: 'show-upload'): void;
 }>();
 
@@ -60,8 +67,7 @@ const handleClose = (e: Event, list: IVideoList) => {
  * 点击列表项开始播放
  */
 const handlePlayVideo = (list: IVideoList) => {
-  console.log('videoList', videoList);
-  emits('play', list.videoUrl, list.type);
+  emits('play', list.videoUrl, list.type, list.jsonFile);
 };
 </script>
 

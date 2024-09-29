@@ -3,7 +3,7 @@ export interface IVideoList {
 
   type: string;
 
-  jsonFile: string;
+  jsonFile: object;
 
   videoUrl: string;
 }

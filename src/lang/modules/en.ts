@@ -1,3 +1,4 @@
 export default {
-  back: 'back'
+  back: 'back',
+  parsing: 'parsing'
 };

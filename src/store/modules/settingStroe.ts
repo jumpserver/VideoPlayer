@@ -3,7 +3,7 @@ import type { ISetting, ThemeType } from '@/store/interface';
 
 export const useSettingStore = defineStore('setting', {
   state: (): ISetting => ({
-    theme: 'light'
+    theme: 'dark'
   }),
   actions: {
     setTheme(theme: ThemeType) {
