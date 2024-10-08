@@ -137,6 +137,9 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
         videoUrl
       });
     }
+
+    if (fileName.includes('.gz')) {
+    }
   });
 };
 
@@ -181,11 +184,13 @@ const fileParser = (fileInfo: UploadFileInfo, eventOptions: IFileParser): Promis
 
     fileReader.onerror = () => {
       eventOptions.onError();
+
       notification.error({
         content: 'Error reading file',
         duration: 2500,
         keepAliveOnHover: true
       });
+
       reject();
     };
   });

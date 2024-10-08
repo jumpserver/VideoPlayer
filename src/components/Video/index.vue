@@ -19,7 +19,7 @@ watch(
 );
 
 const [registerVideoPlayer, videoPlayerInstance] = usePlyrVue({
-  autoplay: false,
+  autoplay: true,
   clickToPlay: true,
   controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen', 'pip'],
   settings: ['quality', 'speed', 'loop'],
@@ -52,7 +52,7 @@ const initVideoPlayer = () => {
         type: 'video/mp4'
       }
     ],
-    poster: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg',
+    // poster: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg',
     tracks: [
       {
         kind: 'captions',

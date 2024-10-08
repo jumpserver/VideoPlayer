@@ -8,5 +8,9 @@ export default {
   user: 'User',
   asset: 'Asset',
   duration: 'Duration',
-  protocol: 'Protocol'
+  protocol: 'Protocol',
+  videoSelection: 'Video Selection',
+  emptyList: 'The playlist is empty',
+  emptyCommand: 'The command list is empty',
+  videoInformation: 'Video Information: '
 };

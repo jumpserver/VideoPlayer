@@ -8,5 +8,9 @@ export default {
   user: '用户',
   asset: '资产',
   duration: '总时长',
-  protocol: '协议'
+  protocol: '协议',
+  videoSelection: '视频选集',
+  emptyList: '播放列表为空',
+  emptyCommand: '命令列表为空',
+  videoInformation: '视频信息：'
 };

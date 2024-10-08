@@ -26,7 +26,7 @@ const lightOverrides: GlobalThemeOverrides = {
     colorHover: '#E0E0E0'
   },
   Divider: {
-    color: '#D9D9D9'
+    color: '#343739'
   },
   Upload: {
     draggerColor: '#F6F7F8',
@@ -44,11 +44,16 @@ const lightOverrides: GlobalThemeOverrides = {
     tabTextColorHoverSegment: '#232527',
     tabTextColorActiveSegment: '#232527',
     colorSegment: '#F6F7F8',
-    paneTextColor: '#232527'
+    paneTextColor: '#232527',
+    tabFontSizeMedium: '15px'
   },
   Empty: {
     iconColor: '#232527',
     textColor: '#232527'
+  },
+  Typography: {
+    headerMargin6: '0 0 5px 0',
+    headerFontSize6: '13px'
   }
 };
 const darkOverrides: GlobalThemeOverrides = {
@@ -60,6 +65,13 @@ const darkOverrides: GlobalThemeOverrides = {
   },
   Divider: {
     color: '#333333'
+  },
+  Tabs: {
+    tabFontSizeMedium: '15px'
+  },
+  Typography: {
+    headerMargin6: '0 0 5px 0',
+    headerFontSize6: '13px'
   }
 };
 

@@ -18,7 +18,7 @@
       {{ t('back') }}
     </n-popover>
     <n-flex v-if="showInfo" align="center" justify="start">
-      <n-h6 m-unset text-13px>
+      <n-h6 text-13px>
         <n-text flex items-center>
           <n-tag round :bordered="false" size="small" type="success">
             {{ t('user') }} : {{ jsonFile?.user }}
@@ -28,8 +28,8 @@
           </n-tag>
         </n-text>
       </n-h6>
-      <n-h6 m-unset text-13px>
-        <n-text perfx="bar" flex items-center>
+      <n-h6 text-13px>
+        <n-text flex items-center>
           <n-tag round :bordered="false" size="small" type="success">
             {{ t('asset') }} : {{ jsonFile?.asset }}
             <template #icon>
@@ -38,8 +38,8 @@
           </n-tag>
         </n-text>
       </n-h6>
-      <n-h6 m-unset text-13px>
-        <n-text perfx="bar" flex items-center>
+      <n-h6 text-13px>
+        <n-text flex items-center>
           <n-tag round :bordered="false" size="small" type="success">
             {{ t('duration') }} : {{ jsonFile?.duration }}
             <template #icon>
@@ -48,8 +48,8 @@
           </n-tag>
         </n-text>
       </n-h6>
-      <n-h6 m-unset text-13px>
-        <n-text perfx="bar" flex items-center>
+      <n-h6 text-13px>
+        <n-text flex items-center>
           <n-tag round :bordered="false" size="small" type="success">
             {{ t('protocol') }} : {{ jsonFile?.protocol }}
             <template #icon>
@@ -108,5 +108,3 @@ const handleBack = () => {
   emit('back');
 };
 </script>
-
-<style scoped></style>

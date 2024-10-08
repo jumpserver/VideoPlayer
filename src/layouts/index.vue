@@ -2,14 +2,12 @@
   <n-flex class="!gap-col-0" h-screen>
     <Side />
     <n-layout font="sans" h-screen class="w-[calc(100vw-65px)]">
-      <n-layout-header flex w-full h-75px main-bg-base>
-        <Header @back="handleBack" :json-file="currentPartJsonFile" />
+      <n-layout-header flex w-full h-55px header-base>
+        <Header @back="handleBack" />
       </n-layout-header>
-
       <n-divider />
-
-      <n-layout-content w-full px="20px" main-bg-base class="h-[calc(100%-76px)]">
-        <n-grid x-gap="12" :cols="12" h-full>
+      <n-layout-content w-full main-bg-base class="h-[calc(100%-56px)]">
+        <n-grid :cols="12" h-full w-full>
           <n-gi :span="8">
             <n-flex h-full justify="center" align="center">
               <Upload v-if="!showPlayer" @parser="handleParser" />
@@ -20,7 +18,11 @@
           </n-gi>
           <n-gi :span="4">
             <n-flex h-full justify="center" align="center">
-              <SliceList @play="handlePlay" @show-upload="handleShowUpload" />
+              <SliceList
+                @play="handlePlay"
+                :json-file="currentPartJsonFile"
+                @show-upload="handleShowUpload"
+              />
             </n-flex>
           </n-gi>
         </n-grid>
@@ -92,11 +94,16 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
     case 'mp4': {
       showPlayer.value = true;
       adjustmentGrid.value = false;
+
+      console.log(jsonFile);
+
       currentPartJsonFile.value = jsonFile;
 
-      router.push({
-        name: 'mp4Player',
-        params: { videoUrl }
+      nextTick(() => {
+        router.push({
+          name: 'mp4Player',
+          params: { videoUrl }
+        });
       });
 
       break;
@@ -104,6 +111,7 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
     case 'cast': {
       showPlayer.value = true;
       adjustmentGrid.value = false;
+      currentPartJsonFile.value = jsonFile;
 
       router.push({
         name: 'asciicastPlayer',

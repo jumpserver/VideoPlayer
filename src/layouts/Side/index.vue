@@ -1,6 +1,6 @@
 <template>
   <div w-65px flex flex-col items-center justify-between h-full side-bg-base>
-    <n-flex mt-20px>
+    <n-flex mt-10px>
       <n-image :src="Logo" :height="34" :width="34" :preview-disabled="true" cursor-pointer />
     </n-flex>
     <n-flex mb-20px align="center" justify="center" w-full>
