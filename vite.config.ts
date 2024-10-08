@@ -7,6 +7,7 @@ import UnoCSS from 'unocss/vite';
 import vue from '@vitejs/plugin-vue';
 import electron from 'vite-plugin-electron';
 import AutoImport from 'unplugin-auto-import/vite';
+import renderer from 'vite-plugin-electron-renderer';
 import Components from 'unplugin-vue-components/vite';
 
 const resolvePath = (path: string) => {
@@ -20,6 +21,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       vue(),
+      renderer({}),
       UnoCSS(),
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia']

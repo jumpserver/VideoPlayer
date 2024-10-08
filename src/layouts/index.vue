@@ -2,10 +2,13 @@
   <n-flex class="!gap-col-0" h-screen>
     <Side />
     <n-layout font="sans" h-screen class="w-[calc(100vw-65px)]">
-      <n-layout-header flex w-full h-75px bordered main-bg-base>
+      <n-layout-header flex w-full h-75px main-bg-base>
         <Header @back="handleBack" :json-file="currentPartJsonFile" />
       </n-layout-header>
-      <n-layout-content w-full px="20px" main-bg-base class="h-[calc(100%-75px)]">
+
+      <n-divider />
+
+      <n-layout-content w-full px="20px" main-bg-base class="h-[calc(100%-76px)]">
         <n-grid x-gap="12" :cols="12" h-full>
           <n-gi :span="8">
             <n-flex h-full justify="center" align="center">
@@ -45,6 +48,7 @@ const { fileParser } = useResolveFile();
 const jsonFile = ref<string>('');
 const videoUrl = ref<string>('');
 const showPlayer = ref<boolean>(false);
+const adjustmentGrid = ref<boolean>(false);
 const currentPartJsonFile = ref({});
 
 /**
@@ -87,6 +91,7 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
   switch (type) {
     case 'mp4': {
       showPlayer.value = true;
+      adjustmentGrid.value = false;
       currentPartJsonFile.value = jsonFile;
 
       router.push({
@@ -98,6 +103,7 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
     }
     case 'cast': {
       showPlayer.value = true;
+      adjustmentGrid.value = false;
 
       router.push({
         name: 'asciicastPlayer',
@@ -109,6 +115,7 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
     case 'gua': {
       // gua replay.gz
       showPlayer.value = true;
+      adjustmentGrid.value = true;
 
       router.push({
         name: 'guaPlayer',
@@ -136,3 +143,10 @@ const handleShowUpload = () => {
   }, 100);
 };
 </script>
+
+<style scoped lang="scss">
+:deep(.n-divider) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+</style>

@@ -21,7 +21,34 @@ const lightOverrides: GlobalThemeOverrides = {
     headerBorderColor: '#fff'
   },
   List: {
-    color: '#fff'
+    color: '#F6F7F8',
+    textColor: '#232527',
+    colorHover: '#E0E0E0'
+  },
+  Divider: {
+    color: '#D9D9D9'
+  },
+  Upload: {
+    draggerColor: '#F6F7F8',
+    itemTextColor: '#232527',
+    itemColorHover: '#E0E0E0',
+    peers: {
+      Button: {
+        textColor: '#232527',
+        colorHover: '#444B51'
+      }
+    }
+  },
+  Tabs: {
+    tabTextColorSegment: '#232527',
+    tabTextColorHoverSegment: '#232527',
+    tabTextColorActiveSegment: '#232527',
+    colorSegment: '#F6F7F8',
+    paneTextColor: '#232527'
+  },
+  Empty: {
+    iconColor: '#232527',
+    textColor: '#232527'
   }
 };
 const darkOverrides: GlobalThemeOverrides = {
@@ -30,6 +57,9 @@ const darkOverrides: GlobalThemeOverrides = {
   },
   List: {
     color: '#252627'
+  },
+  Divider: {
+    color: '#333333'
   }
 };
 

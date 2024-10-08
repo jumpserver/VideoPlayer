@@ -4,7 +4,7 @@
       <template #description> {{ t('parsing') }} </template>
     </n-spin>
   </n-space>
-  <div id="guacamolePlayer" w-full h-full></div>
+  <div id="guacamolePlayer"></div>
 </template>
 
 <script setup lang="ts">
@@ -13,17 +13,18 @@ import { useRoute } from 'vue-router';
 import { useMessage } from 'naive-ui';
 import { computed, onMounted, ref } from 'vue';
 // @ts-ignore
-import { Display, SessionRecording, StaticHTTPTunnel } from '@glokon/guacamole-common-js';
+import * as Guacamole from 'guacamole-common-js-jumpserver/dist/guacamole-common';
 
 const { t } = useI18n();
 const route = useRoute();
 const message = useMessage();
 const guaUrl = computed(() => route.params?.guaUrl as string);
 
-const tunnel: StaticHTTPTunnel = new StaticHTTPTunnel();
-const recording: SessionRecording = new SessionRecording(tunnel);
-const display: Display = recording.getDisplay();
+const tunnel = new Guacamole.StaticHTTPTunnel();
+const recording = new Guacamole.SessionRecording(tunnel);
+const display = recording.getDisplay();
 
+const chunks = ref('');
 const loadingBuffer = ref(false);
 
 const initRecordingEvent = () => {
@@ -42,7 +43,7 @@ const initRecordingEvent = () => {
   };
 
   recording.play();
-  display.scale(0.85);
+  display.scale(0.55);
 };
 
 onMounted(async () => {
@@ -54,14 +55,18 @@ onMounted(async () => {
 
   await window.electron.readFile(guaUrl.value);
 
+  window.electron.onFileDataChunk((_event, chunk) => {
+    chunk = chunk.trim();
+    chunks.value += chunk;
+  });
+
   window.electron.onFileDataEnd((_event, _chunks) => {
-    loadingBuffer.value = false;
-
-    console.log(typeof _chunks);
-    console.log('chunks', _chunks);
-    recording.connect(_chunks);
-
+    recording.connect(chunks.value);
     initRecordingEvent();
+
+    if (recording.isPlaying()) {
+      loadingBuffer.value = false;
+    }
   });
 
   window.electron.onFileDataError((_event, errorMessage) => {

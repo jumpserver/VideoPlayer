@@ -18,7 +18,8 @@ const envConfigPath = resolve(__dirname, 'env-config.json');
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
-const CHUNK_SIZE = 1024 * 1024 * 100;
+// const CHUNK_SIZE = 1024 * 1024;
+const CHUNK_SIZE = 1024 * 64; // 每块大小 64KB
 
 if (existsSync(envConfigPath)) {
   envConfig = JSON.parse(readFileSync(envConfigPath, 'utf8'));
@@ -83,16 +84,14 @@ app.whenReady().then(async () => {
     let chunks = '';
 
     readStream.on('data', chunk => {
-      console.log('Sending chunk of data: ', chunk.length);
-
-      event.sender.send('fileDataData', chunk);
-      chunks += chunk;
+      // chunks += chunk;
+      event.sender.send('fileDataChunk', chunk);
     });
 
     readStream.on('end', () => {
       console.log('Stream End');
-
-      event.sender.send('fileDataEnd', chunks);
+      event.sender.send('fileDataEnd');
+      // event.sender.send('fileDataEnd', chunks);
     });
 
     readStream.on('error', err => {

@@ -24,14 +24,16 @@
                   }
                 "
               >
-                <n-icon size="14" :component="Close" />
+                <n-icon size="14" :component="Close" text-base />
               </n-button>
             </n-flex>
           </template>
         </n-list-item>
       </n-list>
     </n-tab-pane>
-    <n-tab-pane name="commandsList" :tab="t('commandsList')"> </n-tab-pane>
+    <n-tab-pane name="commandsList" :tab="t('commandsList')">
+      <n-empty />
+    </n-tab-pane>
   </n-tabs>
 </template>
 
