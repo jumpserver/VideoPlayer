@@ -139,6 +139,81 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
     }
 
     if (fileName.includes('.gz')) {
+      const processName = fileName.split('.')[1];
+
+      switch (processName) {
+        case 'replay': {
+          const isGua = fileName.split('.')[2] === 'gz';
+
+          if (isGua) {
+            type = 'gua';
+            // @ts-ignore
+            const res = await handleGuaData(e.currentTarget?.result, fileName);
+
+            if (res) {
+              videoUrl = res;
+            }
+
+            break;
+          }
+
+          break;
+        }
+        case 'cast': {
+          type = 'cast';
+
+          try {
+            const decompressedData: Uint8Array = gunzipSync(
+              // @ts-ignore
+              new Uint8Array(e.currentTarget?.result as Uint8Array)
+            );
+
+            const binaryString: string = Array.from(decompressedData)
+              .map((byte: number) => String.fromCharCode(byte))
+              .join('');
+
+            videoUrl = btoa(binaryString);
+          } catch (error) {
+            console.log(error);
+            message.error(`Failed to decompress .gz file: ${error}`);
+            reject(error);
+          }
+          break;
+        }
+      }
+
+      fileStore.setVideoList({
+        type,
+        jsonFile,
+        videoUrl,
+        name: fileName.split('.')[0]
+      });
+
+      resolve({
+        jsonFile,
+        videoUrl
+      });
+    }
+
+    if (fileName.includes('.mp4')) {
+      type = 'mp4';
+      // @ts-ignore
+      const videoBuffer: Uint8Array = new Uint8Array(e.currentTarget?.result);
+      const videoBlob: Blob = new Blob([videoBuffer], { type: 'video/mp4' });
+
+      videoUrl = URL.createObjectURL(videoBlob);
+
+      fileStore.setVideoList({
+        type,
+        jsonFile,
+        videoUrl,
+        name: fileName.split('.')[0]
+      });
+
+      resolve({
+        jsonFile,
+        videoUrl
+      });
     }
   });
 };

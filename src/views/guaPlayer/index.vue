@@ -163,7 +163,6 @@ onMounted(async () => {
   await window.electron.readFile(guaUrl.value);
 
   window.electron.onFileDataChunk((_event, chunk) => {
-    console.log(chunk);
     chunk = chunk.trim();
     chunks.value += chunk;
   });

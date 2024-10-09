@@ -169,8 +169,6 @@ const handleClose = async (e: Event, list: IVideoList) => {
  * 点击列表项开始播放
  */
 const handlePlayVideo = (list: IVideoList) => {
-  console.log(list);
-
   currentIndex.value = videoList.value.findIndex((item: IVideoList) => item.name === list.name) + 1;
   emits('play', list.videoUrl, list.type, list.jsonFile);
 };
