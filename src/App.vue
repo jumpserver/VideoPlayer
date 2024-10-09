@@ -21,12 +21,15 @@ const lightOverrides: GlobalThemeOverrides = {
     headerBorderColor: '#fff'
   },
   List: {
-    color: '#F6F7F8',
+    color: '#F0F2F5',
     textColor: '#232527',
     colorHover: '#E0E0E0'
   },
+  Thing: {
+    titleTextColor: '#232527'
+  },
   Divider: {
-    color: '#343739'
+    color: '#E0E0E0'
   },
   Upload: {
     draggerColor: '#F6F7F8',
@@ -40,10 +43,10 @@ const lightOverrides: GlobalThemeOverrides = {
     }
   },
   Tabs: {
-    tabTextColorSegment: '#232527',
-    tabTextColorHoverSegment: '#232527',
-    tabTextColorActiveSegment: '#232527',
-    colorSegment: '#F6F7F8',
+    tabTextColorBar: '#232527',
+    tabTextColorHoverBar: '#232527',
+    tabTextColorActiveBar: '#232527',
+    colorBar: '#F6F7F8',
     paneTextColor: '#232527',
     tabFontSizeMedium: '15px'
   },
@@ -54,6 +57,14 @@ const lightOverrides: GlobalThemeOverrides = {
   Typography: {
     headerMargin6: '0 0 5px 0',
     headerFontSize6: '13px'
+  },
+  Slider: {
+    railColor: '#E0E0E0',
+    trackColor: '#E0E0E0',
+    railColorHover: '#E0E0E0',
+    trackColorHover: '#E0E0E0',
+    railColorActive: '#E0E0E0',
+    trackColorActive: '#E0E0E0'
   }
 };
 const darkOverrides: GlobalThemeOverrides = {

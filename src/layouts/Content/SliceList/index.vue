@@ -21,32 +21,34 @@
           <template #header>
             {{ t('videoSelection') }} {{ `( ${currentIndex} / ${videoList.length})` }}
           </template>
-          <n-list-item
-            v-for="(list, index) of videoList"
-            :key="list.name"
-            @click="handlePlayVideo(list)"
-          >
-            <n-popover trigger="hover">
-              <template #trigger>
-                {{ `Part ${index + 1}` }}
+          <n-scrollbar style="max-height: 350px">
+            <n-list-item
+              v-for="(list, index) of videoList"
+              :key="list.name"
+              @click="handlePlayVideo(list)"
+            >
+              <n-popover trigger="hover">
+                <template #trigger>
+                  {{ `Part ${index + 1}` }}
+                </template>
+                {{ list.name }}
+              </n-popover>
+              <template #suffix>
+                <n-flex h-full p-5px justify="center" align="center">
+                  <n-button
+                    text
+                    @click="
+                      (e: Event) => {
+                        handleClose(e, list);
+                      }
+                    "
+                  >
+                    <n-icon size="14" :component="Close" text-base />
+                  </n-button>
+                </n-flex>
               </template>
-              {{ list.name }}
-            </n-popover>
-            <template #suffix>
-              <n-flex h-full p-5px justify="center" align="center">
-                <n-button
-                  text
-                  @click="
-                    (e: Event) => {
-                      handleClose(e, list);
-                    }
-                  "
-                >
-                  <n-icon size="14" :component="Close" text-base />
-                </n-button>
-              </n-flex>
-            </template>
-          </n-list-item>
+            </n-list-item>
+          </n-scrollbar>
         </n-list>
       </n-flex>
     </n-tab-pane>
@@ -59,13 +61,14 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
+import { useMessage } from 'naive-ui';
 import { ref, markRaw, watch, Component } from 'vue';
-import { Close } from '@vicons/ionicons5';
 import { useFileStore } from '@/store/modules/fileStore.ts';
-import type { IVideoList } from '@/store/interface';
-import { AccessTimeSharp, ComputerRound } from '@vicons/material';
-import { ProtocolHandler24Regular } from '@vicons/fluent';
+import { Close } from '@vicons/ionicons5';
 import { UserAvatarFilledAlt } from '@vicons/carbon';
+import { ProtocolHandler24Regular } from '@vicons/fluent';
+import { AccessTimeSharp, ComputerRound } from '@vicons/material';
+import type { IVideoList } from '@/store/interface';
 
 interface IJsonFile {
   user?: string;
@@ -83,6 +86,8 @@ interface IJsonFile {
   protocol?: string;
 }
 interface IVideoInfoSetting {
+  key: keyof IJsonFile;
+
   label?: string;
 
   message?: string | undefined;
@@ -100,24 +105,29 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
+const message = useMessage();
 const fileStore = useFileStore();
 
 const { videoList } = storeToRefs(fileStore);
 const currentIndex = ref(0);
 const videoInfoSetting = ref<IVideoInfoSetting[]>([
   {
+    key: 'user',
     label: t('user'),
     iconName: markRaw(UserAvatarFilledAlt)
   },
   {
+    key: 'asset',
     label: t('asset'),
     iconName: markRaw(ComputerRound)
   },
   {
+    key: 'duration',
     label: t('duration'),
     iconName: markRaw(AccessTimeSharp)
   },
   {
+    key: 'protocol',
     label: t('protocol'),
     iconName: markRaw(ProtocolHandler24Regular)
   }
@@ -127,10 +137,9 @@ watch(
   () => props.jsonFile,
   newValue => {
     if (newValue) {
-      videoInfoSetting.value[0].message = newValue.user;
-      videoInfoSetting.value[1].message = newValue.asset;
-      videoInfoSetting.value[2].message = newValue.duration;
-      videoInfoSetting.value[3].message = newValue.protocol;
+      videoInfoSetting.value.map((item: IVideoInfoSetting) => {
+        item.message = newValue[item.key] as string;
+      });
     }
   }
 );
@@ -138,10 +147,18 @@ watch(
 /**
  * 关闭 ListItem
  */
-const handleClose = (e: Event, list: IVideoList) => {
-  fileStore.removeListItem(list.name);
-
+const handleClose = async (e: Event, list: IVideoList) => {
   e.stopPropagation();
+
+  if (list.type === 'gua') {
+    const res = await window.electron.unLinkFile(list.videoUrl);
+
+    if (!res) {
+      return message.error(`Error : ${res}`);
+    }
+  }
+
+  fileStore.removeListItem(list.name);
 
   URL.revokeObjectURL(list.videoUrl);
 
@@ -152,6 +169,8 @@ const handleClose = (e: Event, list: IVideoList) => {
  * 点击列表项开始播放
  */
 const handlePlayVideo = (list: IVideoList) => {
+  console.log(list);
+
   currentIndex.value = videoList.value.findIndex((item: IVideoList) => item.name === list.name) + 1;
   emits('play', list.videoUrl, list.type, list.jsonFile);
 };

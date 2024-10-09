@@ -14,8 +14,8 @@
   >
     <n-upload-dragger flex flex-col justify-center items-center h-full upload-bg-base>
       <div mb-12px>
-        <n-icon size="48" text-base :depth="3">
-          <ArchiveIcon />
+        <n-icon size="48" :depth="3">
+          <ArchiveIcon text-base />
         </n-icon>
       </div>
       <n-text style="font-size: 16px" text-base> {{ t('uploadTitle') }} </n-text>

@@ -50,7 +50,6 @@ const { fileParser } = useResolveFile();
 const jsonFile = ref<string>('');
 const videoUrl = ref<string>('');
 const showPlayer = ref<boolean>(false);
-const adjustmentGrid = ref<boolean>(false);
 const currentPartJsonFile = ref({});
 
 /**
@@ -93,24 +92,18 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
   switch (type) {
     case 'mp4': {
       showPlayer.value = true;
-      adjustmentGrid.value = false;
-
-      console.log(jsonFile);
 
       currentPartJsonFile.value = jsonFile;
 
-      nextTick(() => {
-        router.push({
-          name: 'mp4Player',
-          params: { videoUrl }
-        });
+      router.push({
+        name: 'mp4Player',
+        params: { videoUrl }
       });
 
       break;
     }
     case 'cast': {
       showPlayer.value = true;
-      adjustmentGrid.value = false;
       currentPartJsonFile.value = jsonFile;
 
       router.push({
@@ -123,7 +116,6 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
     case 'gua': {
       // gua replay.gz
       showPlayer.value = true;
-      adjustmentGrid.value = true;
 
       router.push({
         name: 'guaPlayer',

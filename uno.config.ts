@@ -14,16 +14,16 @@ export default defineConfig({
   ],
   shortcuts: {
     'switch-animation': 'transition duration-300',
-    'side-bg-base': 'bg-[#F6F7F8] dark:bg-[#202225] switch-animation',
+    'side-bg-base': 'bg-[#F0F2F5] dark:bg-[#202225] switch-animation',
     'main-bg-base': 'bg-[#ffffff] dark:bg-[#000000] switch-animation',
-    'upload-bg-base': 'bg-[#F6F7F8] dark:bg-[#202225] switch-animation',
+    'upload-bg-base': 'bg-[#F0F2F5] dark:bg-[#202225] switch-animation',
     'list-bg-base': 'bg-[#F6F7F8] dark:bg-[#252627] switch-animation',
     'text-base': 'text-[#20202a] dark:text-[#f0f0f0] switch-animation',
     'icon-hover': 'hover:color-[#1ab394] switch-animation',
     'header-base':
-      'bg-[#123456] dark:bg-[#202225] text-[#20202a] dark:text-[#F6F7F8] switch-animation',
+      'bg-[#F0F2F5] dark:bg-[#202225] text-[#20202a] dark:text-[#F6F7F8] switch-animation',
     'right-side':
-      'text-[#20202a] dark:text-[#F6F7F8] bg-[#123456] dark:bg-[#18191B]  switch-animation'
+      'text-[#20202a] dark:text-[#F6F7F8] bg-[#FFFFFF] dark:bg-[#18191B]  switch-animation'
   },
   theme: {
     fontSize: {

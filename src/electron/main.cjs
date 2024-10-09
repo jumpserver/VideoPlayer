@@ -1,16 +1,7 @@
 const { gunzipSync } = require('fflate');
 const { join, resolve } = require('path');
 const { app, BrowserWindow, ipcMain } = require('electron');
-const { existsSync, readFileSync, writeFileSync, createReadStream } = require('fs');
-const { createDiscreteApi, darkTheme } = require('naive-ui');
-const { readFile } = require('node:fs/promises');
-const { Transform, pipeline } = require('node:stream');
-
-const { message } = createDiscreteApi(['message'], {
-  configProviderProps: {
-    theme: darkTheme
-  }
-});
+const { existsSync, readFileSync, writeFileSync, createReadStream, unlink } = require('fs');
 
 let envConfig;
 
@@ -81,7 +72,7 @@ app.whenReady().then(async () => {
       encoding: 'utf8'
     });
 
-    let chunks = '';
+    // let chunks = '';
 
     readStream.on('data', chunk => {
       // chunks += chunk;
@@ -97,6 +88,15 @@ app.whenReady().then(async () => {
     readStream.on('error', err => {
       console.error('Stream Error: ', err.message);
       event.sender.send('fileDataError', err.message);
+    });
+  });
+
+  ipcMain.handle('unLinkFile', (event, filePath) => {
+    return new Promise((resolve, reject) => {
+      unlink(filePath, err => {
+        if (err) reject(false);
+        resolve(true);
+      });
     });
   });
 });
