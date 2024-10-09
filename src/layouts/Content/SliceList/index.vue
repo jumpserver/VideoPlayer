@@ -52,9 +52,9 @@
         </n-list>
       </n-flex>
     </n-tab-pane>
-    <n-tab-pane name="commandsList" :tab="t('commandsList')">
-      <n-empty :description="t('emptyCommand')" />
-    </n-tab-pane>
+    <!--    <n-tab-pane name="commandsList" :tab="t('commandsList')">-->
+    <!--      <n-empty :description="t('emptyCommand')" />-->
+    <!--    </n-tab-pane>-->
   </n-tabs>
 </template>
 
@@ -180,14 +180,6 @@ const handlePlayVideo = (list: IVideoList) => {
 }
 
 :deep(.n-tabs-pane-wrapper) {
-  //position: relative;
   height: 100%;
-
-  //.n-empty {
-  //  position: absolute;
-  //  top: 50%;
-  //  left: 50%;
-  //  transform: translate(-50%, -50%);
-  //}
 }
 </style>

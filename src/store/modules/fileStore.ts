@@ -19,14 +19,16 @@ export const useFileStore = defineStore('file', {
         return this.videoList.push(listItem);
       }
 
-      this.videoList.map((list: IVideoList) => {
-        if (list.name === listItem.name) {
-          message.info('您已经提交过该文件，请到列表中查看！');
-          return;
-        }
-
-        this.videoList.push(listItem);
+      const exists = this.videoList.some((list: IVideoList) => {
+        return list.name === listItem.name;
       });
+
+      if (exists) {
+        message.info('您已经提交过该文件，请到列表中查看！');
+        return;
+      }
+
+      this.videoList.push(listItem);
     },
     removeListItem(name: string) {
       this.videoList = this.videoList.filter((list: IVideoList) => list.name !== name);
