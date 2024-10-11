@@ -1,6 +1,7 @@
 <template>
   <n-config-provider :theme-overrides="overrides[theme]" :theme="darkTheme" :class="theme">
     <n-message-provider>
+      123123123ß
       <router-view />
     </n-message-provider>
   </n-config-provider>

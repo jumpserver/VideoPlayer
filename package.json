@@ -3,16 +3,54 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "src/electron/main.cjs",
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "buildapp": "vite build && electron-builder",
     "preview": "vite preview"
+  },
+  "build": {
+    "asar": false,
+    "productName": "JumpServer Video Player",
+    "directories": {
+      "output": "release/",
+      "buildResources": "assets"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "dist/**/*"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 410,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "file"
+        }
+      ]
+    },
+    "mac": {
+      "icon": "assets/player.icns"
+    },
+    "win": {
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "icon": "assets"
+    }
   },
   "dependencies": {
     "@cyolosecurity/asciinema-player": "3.6.3-3",
     "@vueuse/core": "^11.1.0",
     "@xterm/xterm": "^5.5.0",
+    "electron-debug": "^4.0.1",
     "fflate": "^0.8.2",
     "guacamole-common-js-jumpserver": "1.1.0-c",
     "js-untar": "^2.0.0",

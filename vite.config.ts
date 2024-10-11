@@ -1,5 +1,6 @@
 import { resolve } from 'path';
 import { writeFileSync } from 'fs';
+import { builtinModules } from 'module';
 import { defineConfig, loadEnv } from 'vite';
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 
@@ -19,9 +20,24 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
 
   return {
+    base: './',
+    root: __dirname,
+    build: {
+      fileName: 'dist',
+      emptyOutDir: true,
+      rollupOptions: {
+        output: {
+          format: 'cjs'
+        },
+        external: ['electron', ...builtinModules]
+      }
+    },
+    optimizeDeps: {
+      exclude: ['electron']
+    },
     plugins: [
       vue(),
-      renderer({}),
+      renderer(),
       UnoCSS(),
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia']
@@ -35,13 +51,14 @@ export default defineConfig(({ mode }) => {
           const writeEnv = {
             VITE_BASE_URL: env.VITE_BASE_URL
           };
-          const filePath = resolve(__dirname, 'src/electron/env-config.json');
+
+          const filePath = resolve(__dirname, 'dist-electron', 'env.json');
 
           writeFileSync(filePath, JSON.stringify(writeEnv, null, 2));
         }
       },
       electron({
-        entry: './src/electron/main.cjs'
+        entry: './src/electron/main.js'
       })
     ],
     resolve: {
