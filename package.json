@@ -1,13 +1,13 @@
 {
   "name": "video-player",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.19",
   "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "buildapp": "vite build && electron-builder",
+    "buildapp": "vite build && electron-builder --mac --win --linux",
     "preview": "vite preview"
   },
   "build": {
@@ -37,13 +37,26 @@
       ]
     },
     "mac": {
-      "icon": "assets/player.icns"
+      "icon": "assets/player.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ]
     },
     "win": {
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ]
     },
     "linux": {
-      "icon": "assets"
+      "icon": "assets",
+      "target": ["zip"]
     }
   },
   "dependencies": {

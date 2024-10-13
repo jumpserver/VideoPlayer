@@ -6,7 +6,7 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 
 import UnoCSS from 'unocss/vite';
 import vue from '@vitejs/plugin-vue';
-import electron from 'vite-plugin-electron';
+import electron from 'vite-plugin-electron/simple';
 import AutoImport from 'unplugin-auto-import/vite';
 import renderer from 'vite-plugin-electron-renderer';
 import Components from 'unplugin-vue-components/vite';
@@ -26,9 +26,6 @@ export default defineConfig(({ mode }) => {
       fileName: 'dist',
       emptyOutDir: true,
       rollupOptions: {
-        output: {
-          format: 'cjs'
-        },
         external: ['electron', ...builtinModules]
       }
     },
@@ -58,7 +55,12 @@ export default defineConfig(({ mode }) => {
         }
       },
       electron({
-        entry: './src/electron/main.js'
+        main: {
+          entry: 'electron/main.ts'
+        },
+        preload: {
+          input: resolvePath('electron/preload.ts')
+        }
       })
     ],
     resolve: {
