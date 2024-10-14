@@ -1,5 +1,4 @@
 import { resolve } from 'path';
-import { writeFileSync } from 'fs';
 import { builtinModules } from 'module';
 import { defineConfig, loadEnv } from 'vite';
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
@@ -42,18 +41,6 @@ export default defineConfig(({ mode }) => {
       Components({
         resolvers: [NaiveUiResolver()]
       }),
-      {
-        name: 'write-env',
-        closeBundle() {
-          const writeEnv = {
-            VITE_BASE_URL: env.VITE_BASE_URL
-          };
-
-          const filePath = resolve(__dirname, 'dist-electron', 'env.json');
-
-          writeFileSync(filePath, JSON.stringify(writeEnv, null, 2));
-        }
-      },
       electron({
         main: {
           entry: 'electron/main.ts'
