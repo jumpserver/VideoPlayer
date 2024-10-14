@@ -33,5 +33,5 @@ build_script:
 test: off
 
 artifacts:
-  - path: release\JumpServer Video Player Setup 1.0.0.exe
+  - path: release/JumpServer_Video_Player\ Setup\ 0.1.10.exe
     name: JumpserverVideoPlayer
