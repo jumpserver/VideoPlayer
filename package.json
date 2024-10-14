@@ -12,7 +12,7 @@
   },
   "build": {
     "asar": false,
-    "productName": "JumpServer Video Player",
+    "productName": "JumpServer_Video_Player",
     "directories": {
       "output": "release/",
       "buildResources": "assets"

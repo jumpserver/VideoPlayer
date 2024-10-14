@@ -45,8 +45,8 @@ jobs:
       - name: Build
         run: |
           yarn run build
-          mv release/JumpServer Video Player Setup ${{ steps.get_version.outputs.TAG }}.exe
-          mv release/JumpServer Video Player-${{ steps.get_version.outputs.TAG }}-arm64.dmg
+          mv release/JumpServer_Video_Player\ Setup${{ steps.get_version.outputs.TAG }}.exe
+          mv release/JumpServer_Video_Player-${{ steps.get_version.outputs.TAG }}-arm64.dmg
 
       - name: Release Upload Assets
         uses: softprops/action-gh-release@v1
