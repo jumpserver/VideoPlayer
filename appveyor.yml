@@ -21,6 +21,7 @@ init:
 
 install:
   - ps: Install-Product node 20 x64
+  - npm install pnpm -g
   - git reset --hard HEAD
   - pnpm config set ignore-engines true
   - pnpm
