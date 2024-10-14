@@ -50,7 +50,7 @@ const handleChangeLanguage = () => {
   i18n.locale.value = lang.value === 'zh' ? 'en' : 'zh';
   settingStore.setLanguage(i18n.locale.value);
 
-  message.success('Language changed');
+  message.success(i18n.t('toggleLangSuccess'));
 };
 
 const handleChangeTheme = () => {

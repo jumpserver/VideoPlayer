@@ -12,5 +12,6 @@ export default {
   videoSelection: 'Video Selection',
   emptyList: 'The playlist is empty',
   emptyCommand: 'The command list is empty',
-  videoInformation: 'Video Information: '
+  videoInformation: 'Video Information: ',
+  toggleLangSuccess: 'Language changed',
 };
