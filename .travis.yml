@@ -29,7 +29,7 @@ before_install:
 install:
 #- export DISPLAY=':99.0'
 #- Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
-- nvm install 10
+- nvm install 20
 - curl -o- -L https://yarnpkg.com/install.sh | bash
 - source ~/.bashrc
 - npm install -g xvfb-maybe
@@ -43,7 +43,7 @@ branches:
 deploy:
   provider: releases
   api_key: ${GH_TOKEN}
-  file: build/Jumpserver Video Player-0.0.1.dmg
+  file: release/JumpServer Video Player-1.0.0.dmg
   skip_cleanup: true
   draft: true
   # on:
