@@ -12,5 +12,6 @@ export default {
   videoSelection: '视频选集',
   emptyList: '播放列表为空',
   emptyCommand: '命令列表为空',
-  videoInformation: '视频信息：'
+  videoInformation: '视频信息：',
+  toggleLangSuccess: '语言已更改',
 };
