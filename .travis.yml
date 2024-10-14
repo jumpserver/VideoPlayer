@@ -33,10 +33,10 @@ install:
 - curl -o- -L https://yarnpkg.com/install.sh | bash
 - source ~/.bashrc
 - npm install -g xvfb-maybe
-- yarn
+- pnpm
 script:
 #- xvfb-maybe node_modules/.bin/karma start test/unit/karma.conf.js
-- yarn run build
+- pnpm run build
 branches:
   only:
   - master
