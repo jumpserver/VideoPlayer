@@ -1,7 +1,7 @@
 {
   "name": "video-player",
   "private": true,
-  "version": "1.0.1",
+  "version": "0.1.10",
   "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {

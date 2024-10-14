@@ -36,22 +36,17 @@ jobs:
           tag: ${{ steps.get_version.outputs.TAG }}
       - uses: actions/setup-node@v3
         with:
-          node-version: '16.20'
+          node-version: '20.12.2'
       - name: Install Dependencies
         run: |
           yarn install
           mkdir -p release
 
-      - name: Build Win x64
+      - name: Build
         run: |
-          yarn run build:win
-          mv dist/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}.exe release/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}-win-x64.exe
-
-      - name: Build Win x86
-        run: |
-          rm -rf dist/*
-          yarn run build:win32
-          mv dist/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}.exe release/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}-win-x86.exe
+          yarn run build
+          mv release/JumpServer Video Player Setup ${{ steps.get_version.outputs.TAG }}.exe
+          mv release/JumpServer Video Player-${{ steps.get_version.outputs.TAG }}-arm64.dmg
 
       - name: Release Upload Assets
         uses: softprops/action-gh-release@v1
