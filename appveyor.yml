@@ -22,13 +22,13 @@ init:
 install:
   - ps: Install-Product node 20 x64
   - git reset --hard HEAD
-  - yarn config set ignore-engines true
-  - yarn
+  - pnpm config set ignore-engines true
+  - pnpm
   - node --version
 
 build_script:
   #- yarn test
-  - yarn build
+  - pnpm build
 
 test: off
 
