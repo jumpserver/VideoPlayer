@@ -35,22 +35,18 @@
 
 <script setup lang="ts">
 import Logo from '@/assets/Logo.svg';
-import { useMessage } from 'naive-ui';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useSettingStore } from '@/store/modules/settingStroe.ts';
 import { SunnyOutline, MoonOutline, LanguageOutline } from '@vicons/ionicons5';
 
 const i18n = useI18n();
-const message = useMessage();
 const settingStore = useSettingStore();
 const { theme, lang } = storeToRefs(settingStore);
 
 const handleChangeLanguage = () => {
   i18n.locale.value = lang.value === 'zh' ? 'en' : 'zh';
   settingStore.setLanguage(i18n.locale.value);
-
-  message.success(i18n.t('toggleLangSuccess'));
 };
 
 const handleChangeTheme = () => {

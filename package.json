@@ -1,7 +1,7 @@
 {
   "name": "video-player",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {
@@ -38,6 +38,7 @@
     },
     "mac": {
       "icon": "assets/player.icns",
+      "identity": null,
       "target": [
         "dmg",
         "zip"

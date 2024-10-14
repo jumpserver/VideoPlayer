@@ -40,9 +40,11 @@ import { PlayCircleOutline, StopCircleOutline } from '@vicons/ionicons5';
 // @ts-ignore
 import * as Guacamole from 'guacamole-common-js-jumpserver/dist/guacamole-common';
 
+// @ts-ignore
+const message = useMessage();
+
 const { t } = useI18n();
 const route = useRoute();
-const message = useMessage();
 const guaUrl = computed(() => route.params?.guaUrl as string);
 
 const tunnel = new Guacamole.StaticHTTPTunnel();
@@ -173,11 +175,12 @@ onMounted(async () => {
     initRecordingEvent();
   });
 
-  window.electron.onFileDataError((_event, errorMessage) => {
-    message.error(`Error: ${errorMessage}`);
+  window.electron.onFileDataError((_event, _errorMessage) => {
+    // message.error(`Error: ${errorMessage}`);
     loadingBuffer.value = false;
   });
 });
+
 onUnmounted(() => {
   recording.disconnect();
   chunks.value = '';
