@@ -1,0 +1,64 @@
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Create Release And Upload assets
+
+jobs:
+  create-realese:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Install Dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y build-essential wine wine32
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get version
+        id: get_version
+        run: |
+          TAG=$(basename ${GITHUB_REF})
+          echo "TAG=${TAG}" >> $GITHUB_OUTPUT
+      - name: Create Release
+        id: create_release
+        uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config-name: release-config.yml
+          version: ${{ steps.get_version.outputs.TAG }}
+          tag: ${{ steps.get_version.outputs.TAG }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.20'
+      - name: Install Dependencies
+        run: |
+          yarn install
+          mkdir -p release
+
+      - name: Build Win x64
+        run: |
+          yarn run build:win
+          mv dist/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}.exe release/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}-win-x64.exe
+
+      - name: Build Win x86
+        run: |
+          rm -rf dist/*
+          yarn run build:win32
+          mv dist/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}.exe release/JumpServer-VideoPlayer-${{ steps.get_version.outputs.TAG }}-win-x86.exe
+
+      - name: Release Upload Assets
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          files: |
+            release/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

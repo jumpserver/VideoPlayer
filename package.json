@@ -1,34 +1,25 @@
 {
-  "name": "jumperver_video_player",
-  "version": "0.1.5",
-  "author": "OrangeM21 <orangemtony@gmail.com>",
-  "description": "An electron-vue project",
-  "license": null,
-  "main": "./dist/electron/main.js",
+  "name": "video-player",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist-electron/main.js",
   "scripts": {
-    "build": "node .electron-vue/build.js && electron-builder",
-    "build:dir": "node .electron-vue/build.js && electron-builder --dir",
-    "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
-    "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
-    "dev": "node .electron-vue/dev-runner.js",
-    "lint": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter src test",
-    "lint:fix": "eslint --ext .js,.vue -f ./node_modules/eslint-friendly-formatter --fix src test",
-    "pack": "npm run pack:main && npm run pack:renderer",
-    "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
-    "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
-    "test": "npm run unit",
-    "unit": "karma start test/unit/karma.conf.js",
-    "postinstall": "npm run lint:fix"
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "buildapp": "vite build && electron-builder --mac --win --linux",
+    "preview": "vite preview"
   },
   "build": {
     "asar": false,
     "productName": "JumpServer Video Player",
-    "appId": "com.example.yourapp",
     "directories": {
-      "output": "build"
+      "output": "release/",
+      "buildResources": "assets"
     },
     "files": [
-      "dist/electron/**/*"
+      "dist-electron/**/*",
+      "dist/**/*"
     ],
     "dmg": {
       "contents": [
@@ -46,89 +37,70 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/player.icns"
+      "icon": "assets/player.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ]
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "assets/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ]
     },
     "linux": {
-      "icon": "build/icons"
+      "icon": "assets",
+      "target": ["zip"]
     }
   },
   "dependencies": {
-    "axios": "^0.18.0",
-    "decompress": "^4.2.0",
-    "decompress-targz": "^4.1.1",
-    "vue": "^2.5.16",
-    "vue-electron": "^1.0.6",
-    "vue-router": "^3.0.1",
-    "xterm-addon-fit": "^0.3.0"
+    "@cyolosecurity/asciinema-player": "3.6.3-3",
+    "@vueuse/core": "^11.1.0",
+    "@xterm/xterm": "^5.5.0",
+    "electron-debug": "^4.0.1",
+    "fflate": "^0.8.2",
+    "guacamole-common-js-jumpserver": "1.1.0-c",
+    "js-untar": "^2.0.0",
+    "normalize.css": "^8.0.1",
+    "pinia": "^2.2.2",
+    "plyr-vue": "^2.6.8",
+    "vue": "^3.4.37",
+    "vue-i18n": "^9.14.0",
+    "vue-router": "^4.4.3"
   },
   "devDependencies": {
-    "ajv": "^6.5.0",
-    "babel-core": "^6.26.3",
-    "babel-eslint": "^8.2.3",
-    "babel-loader": "^7.1.4",
-    "babel-minify-webpack-plugin": "^0.3.1",
-    "babel-plugin-istanbul": "^4.1.6",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-stage-0": "^6.24.1",
-    "babel-register": "^6.26.0",
-    "cfonts": "^2.1.2",
-    "chai": "^4.1.2",
-    "chalk": "^2.4.1",
-    "compressing": "^1.5.0",
-    "copy-webpack-plugin": "^4.5.1",
-    "cross-env": "^5.1.6",
-    "css-loader": "^0.28.11",
-    "del": "^3.0.0",
-    "devtron": "^1.4.0",
-    "electron": "^13.1.6",
-    "electron-builder": "22.10.5",
-    "electron-debug": "^1.5.0",
-    "electron-devtools-installer": "^2.2.4",
-    "electron-rebuild": "^3.2.5",
-    "element-ui": "^2.13.0",
-    "eslint": "^4.19.1",
-    "eslint-config-standard": "^11.0.0",
-    "eslint-friendly-formatter": "^4.0.1",
-    "eslint-loader": "^2.0.0",
-    "eslint-plugin-html": "^4.0.3",
-    "eslint-plugin-import": "^2.12.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.8.0",
-    "eslint-plugin-standard": "^3.1.0",
-    "file-loader": "^1.1.11",
-    "guacamole-common-js-jumpserver": "^1.1.0-c",
-    "html-webpack-plugin": "^3.2.0",
-    "inject-loader": "^4.0.1",
-    "karma": "^2.0.2",
-    "karma-chai": "^0.1.0",
-    "karma-coverage": "^1.1.2",
-    "karma-electron": "^6.0.0",
-    "karma-mocha": "^1.3.0",
-    "karma-sourcemap-loader": "^0.3.7",
-    "karma-spec-reporter": "^0.0.32",
-    "karma-webpack": "^3.0.0",
-    "mini-css-extract-plugin": "0.4.0",
-    "mocha": "^5.2.0",
-    "multispinner": "^0.2.1",
-    "node-loader": "^0.6.0",
-    "node-sass": "^4.9.2",
-    "sass-loader": "^7.0.3",
-    "style-loader": "^0.21.0",
-    "url-loader": "^1.0.1",
-    "vue-devtools": "^5.1.4",
-    "vue-html-loader": "^1.2.4",
-    "vue-loader": "^15.2.4",
-    "vue-style-loader": "^4.1.0",
-    "vue-template-compiler": "^2.5.16",
-    "webpack": "^4.15.1",
-    "webpack-cli": "^3.0.8",
-    "webpack-dev-server": "^3.1.4",
-    "webpack-hot-middleware": "^2.22.2",
-    "webpack-merge": "^4.1.3",
-    "xterm": "^4.4.0"
+    "@types/electron": "^1.6.10",
+    "@types/node": "^22.5.1",
+    "@unocss/preset-web-fonts": "^0.62.3",
+    "@vicons/antd": "^0.12.0",
+    "@vicons/carbon": "^0.12.0",
+    "@vicons/fa": "^0.12.0",
+    "@vicons/fluent": "^0.12.0",
+    "@vicons/ionicons4": "^0.12.0",
+    "@vicons/ionicons5": "^0.12.0",
+    "@vicons/material": "^0.12.0",
+    "@vicons/tabler": "^0.12.0",
+    "@vitejs/plugin-vue": "^5.1.2",
+    "electron": "^32.0.1",
+    "electron-builder": "^24.13.3",
+    "electron-devtools-installer": "^3.2.0",
+    "eslint": "^9.9.1",
+    "naive-ui": "^2.39.0",
+    "prettier": "^3.3.3",
+    "sass": "^1.78.0",
+    "typescript": "^5.5.3",
+    "unocss": "^0.62.3",
+    "unplugin-auto-import": "^0.18.2",
+    "unplugin-vue-components": "^0.27.4",
+    "vite": "^5.4.1",
+    "vite-plugin-electron": "^0.28.7",
+    "vite-plugin-electron-renderer": "^0.14.6",
+    "vue-tsc": "^2.0.29"
   }
 }
