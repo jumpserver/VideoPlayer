@@ -1,5 +1,14 @@
 <template>
-  <n-space v-if="loadingBuffer" justify="center" align="center" size="small" w-full h-full>
+  <n-space
+    v-if="loadingBuffer"
+    justify="center"
+    align="center"
+    size="small"
+    w-full
+    h-full
+    pos-absolute
+    z-9999
+  >
     <n-spin :show="loadingBuffer">
       <template #description> {{ t('parsing') }} </template>
     </n-spin>
@@ -176,7 +185,6 @@ onMounted(async () => {
   });
 
   window.electron.onFileDataError((_event, _errorMessage) => {
-    // message.error(`Error: ${errorMessage}`);
     loadingBuffer.value = false;
   });
 });

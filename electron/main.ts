@@ -111,6 +111,10 @@ app.whenReady().then(() => {
       });
     });
   });
+
+  ipcMain.handle('set-title', _event => {
+    window.setTitle('JumpServer Video Player');
+  });
 });
 
 app.on('window-all-closed', () => {
