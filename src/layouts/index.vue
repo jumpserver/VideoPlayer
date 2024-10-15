@@ -125,6 +125,19 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
       break;
     }
 
+    case 'part': {
+      showPlayer.value = true;
+
+      currentPartJsonFile.value = jsonFile;
+
+      router.push({
+        name: 'guaPlayer',
+        params: { guaUrl: videoUrl }
+      });
+
+      break;
+    }
+
     default: {
       showPlayer.value = false;
 

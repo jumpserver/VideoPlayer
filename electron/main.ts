@@ -1,9 +1,10 @@
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'node:url';
-import { writeFileSync, createReadStream, unlink } from 'fs';
+import { writeFile } from 'fs/promises';
+import { createReadStream, unlink } from 'fs';
 import install, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 
-import { gunzipSync } from 'fflate';
+import { gunzip } from 'fflate';
 import { app, ipcMain } from 'electron';
 import { BrowserWindow } from 'electron';
 
@@ -47,18 +48,27 @@ const createWindow = () => {
   }
 };
 
-app.whenReady().then(async () => {
-  await createWindow();
+app.whenReady().then(() => {
+  createWindow();
 
   ipcMain.handle('writeFile', async (_event, buffer, fileName) => {
+    console.log('buffer', buffer);
     try {
       // 解压过程放入主进程
-      const decompressedData = gunzipSync(Buffer.from(buffer));
-      const outputBuffer = Buffer.from(decompressedData);
+      const data = await new Promise((resolve, reject) => {
+        gunzip(Buffer.from(buffer), (err, decompressedData) => {
+          if (err) {
+            console.error('Decompression error:', err);
+            return reject('');
+          }
+
+          resolve(decompressedData);
+        });
+      });
 
       const filePath = join(app.getPath('userData'), fileName);
 
-      writeFileSync(filePath, outputBuffer);
+      await writeFile(filePath, data as Uint8Array);
 
       return filePath;
     } catch (e: any) {
@@ -108,6 +118,8 @@ app.on('ready', () => {
   install(VUEJS3_DEVTOOLS).then((_r: string) => {});
 });
 
-app.on('activate', async () => {
-  await createWindow();
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
 });
