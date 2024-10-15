@@ -8,9 +8,10 @@
 
 <script setup lang="ts">
 import { darkTheme } from 'naive-ui';
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
 import { GlobalThemeOverrides } from 'naive-ui';
 import { useSettingStore } from '@/store/modules/settingStroe.ts';
-import { storeToRefs } from 'pinia';
 
 interface ThemeOverrides {
   [key: string]: GlobalThemeOverrides;
@@ -91,6 +92,11 @@ const overrides: ThemeOverrides = {
   dark: darkOverrides
 };
 
+const router = useRouter();
 const settingStore = useSettingStore();
 const { theme } = storeToRefs(settingStore);
+
+router.afterEach(() => {
+  window.electron.setTitle();
+});
 </script>

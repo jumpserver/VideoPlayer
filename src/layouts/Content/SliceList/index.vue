@@ -2,21 +2,34 @@
   <n-tabs animated size="medium" type="bar" h-full p-10px right-side>
     <n-tab-pane name="playlists" :tab="t('playlists')">
       <n-empty v-if="videoList.length === 0" :description="t('emptyList')" />
-      <n-flex vertical v-else>
-        <n-list bordered>
+      <n-flex vertical v-else min-w="340px">
+        <n-list bordered whitespace-nowrap>
           <n-list-item>
             <n-thing :title="t('videoInformation')">
               <n-h6 v-for="item of videoInfoSetting" :key="item.label">
-                <n-tag round :bordered="false" size="small" type="info">
-                  {{ item.label }} : {{ item.message }}
-                  <template #icon>
-                    <n-icon :component="item.iconName" />
+                <n-popover trigger="hover">
+                  <template #trigger>
+                    <n-tag
+                      round
+                      size="small"
+                      type="info"
+                      max-w="315px"
+                      cursor-pointer
+                      :bordered="false"
+                    >
+                      {{ item.label }} : {{ item.message }}
+                      <template #icon>
+                        <n-icon :component="item.iconName" />
+                      </template>
+                    </n-tag>
                   </template>
-                </n-tag>
+                  {{ item.message }}
+                </n-popover>
               </n-h6>
             </n-thing>
           </n-list-item>
         </n-list>
+
         <n-list bordered hoverable clickable>
           <template #header>
             {{ t('videoSelection') }} {{ `( ${currentIndex} / ${videoList.length})` }}
@@ -62,7 +75,7 @@
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useMessage } from 'naive-ui';
-import { ref, markRaw, watch, Component } from 'vue';
+import { ref, markRaw, watch, Component, computed } from 'vue';
 import { useFileStore } from '@/store/modules/fileStore.ts';
 import { Close } from '@vicons/ionicons5';
 import { UserAvatarFilledAlt } from '@vicons/carbon';
@@ -104,45 +117,81 @@ const props = defineProps<{
   jsonFile?: IJsonFile;
 }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const message = useMessage();
 const fileStore = useFileStore();
 
 const { videoList } = storeToRefs(fileStore);
 const currentIndex = ref(0);
-const videoInfoSetting = ref<IVideoInfoSetting[]>([
-  {
-    key: 'user',
-    label: t('user'),
-    iconName: markRaw(UserAvatarFilledAlt)
-  },
-  {
-    key: 'asset',
-    label: t('asset'),
-    iconName: markRaw(ComputerRound)
-  },
-  {
-    key: 'duration',
-    label: t('duration'),
-    iconName: markRaw(AccessTimeSharp)
-  },
-  {
-    key: 'protocol',
-    label: t('protocol'),
-    iconName: markRaw(ProtocolHandler24Regular)
-  }
-]);
+const videoInfoSetting = ref<IVideoInfoSetting[]>([]);
 
 watch(
   () => props.jsonFile,
   newValue => {
     if (newValue) {
-      videoInfoSetting.value.map((item: IVideoInfoSetting) => {
-        item.message = newValue[item.key] as string;
-      });
+      setVideoInfoSetting();
     }
   }
 );
+
+watch(
+  () => locale.value,
+  newValue => {
+    if (newValue) {
+      setVideoInfoSetting();
+    }
+  }
+);
+
+const durationComputed = computed(() => {
+  if (props.jsonFile && props.jsonFile.date_start && props.jsonFile.date_end) {
+    const startDate = new Date(props.jsonFile.date_start);
+    const endDate = new Date(props.jsonFile.date_end);
+
+    const durationMs = endDate.getTime() - startDate.getTime();
+
+    if (isNaN(durationMs) || durationMs < 0) return '';
+
+    const seconds = Math.floor((durationMs / 1000) % 60);
+    const minutes = Math.floor((durationMs / (1000 * 60)) % 60);
+    const hours = Math.floor(durationMs / (1000 * 60 * 60));
+
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+  return '';
+});
+
+/**
+ * 设置视频信息
+ */
+const setVideoInfoSetting = () => {
+  videoInfoSetting.value = [
+    {
+      key: 'user',
+      label: t('user'),
+      iconName: markRaw(UserAvatarFilledAlt),
+      message: props.jsonFile?.user
+    },
+    {
+      key: 'asset',
+      label: t('asset'),
+      iconName: markRaw(ComputerRound),
+      message: props.jsonFile?.asset
+    },
+    {
+      key: 'duration',
+      label: t('duration'),
+      iconName: markRaw(AccessTimeSharp),
+      message: durationComputed.value
+    },
+    {
+      key: 'protocol',
+      label: t('protocol'),
+      iconName: markRaw(ProtocolHandler24Regular),
+      message: props.jsonFile?.protocol
+    }
+  ];
+};
 
 /**
  * 关闭 ListItem
@@ -172,6 +221,8 @@ const handlePlayVideo = (list: IVideoList) => {
   currentIndex.value = videoList.value.findIndex((item: IVideoList) => item.name === list.name) + 1;
   emits('play', list.videoUrl, list.type, list.jsonFile);
 };
+
+setVideoInfoSetting();
 </script>
 
 <style lang="scss" scoped>
