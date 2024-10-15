@@ -150,7 +150,7 @@ watch(
 const handleClose = async (e: Event, list: IVideoList) => {
   e.stopPropagation();
 
-  if (list.type === 'gua') {
+  if (list.type === 'gua' || list.type === 'part') {
     const res = await window.electron.unLinkFile(list.videoUrl);
 
     if (!res) {

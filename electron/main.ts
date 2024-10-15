@@ -1,21 +1,22 @@
 import { join, dirname } from 'path';
+import { Readable } from 'stream';
+import { createGunzip } from 'zlib';
 import { fileURLToPath } from 'node:url';
-import { writeFile } from 'fs/promises';
-import { createReadStream, unlink } from 'fs';
+import { createReadStream, createWriteStream, unlink } from 'fs';
 import install, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 
-import { gunzip } from 'fflate';
 import { app, ipcMain } from 'electron';
 import { BrowserWindow } from 'electron';
 
 export const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const CHUNK_SIZE = 1024 * 64;
+let window: any;
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 const createWindow = () => {
-  const window = new BrowserWindow({
+  window = new BrowserWindow({
     width: 1180,
     height: 730,
     minWidth: 1024,
@@ -51,26 +52,32 @@ const createWindow = () => {
 app.whenReady().then(() => {
   createWindow();
 
-  ipcMain.handle('writeFile', async (_event, buffer, fileName) => {
-    console.log('buffer', buffer);
+  ipcMain.handle('writeFile', async (_event, arrayBuffer, fileName) => {
     try {
       // 解压过程放入主进程
-      const data = await new Promise((resolve, reject) => {
-        gunzip(Buffer.from(buffer), (err, decompressedData) => {
-          if (err) {
-            console.error('Decompression error:', err);
-            return reject('');
-          }
 
-          resolve(decompressedData);
-        });
-      });
-
+      const buffer = Buffer.from(arrayBuffer);
       const filePath = join(app.getPath('userData'), fileName);
 
-      await writeFile(filePath, data as Uint8Array);
+      const bufferStream = new Readable();
+      bufferStream.push(buffer);
+      bufferStream.push(null);
 
-      return filePath;
+      // 创建解压流和写入流
+      const gunzipStream = createGunzip();
+      const fileWriteStream = createWriteStream(filePath);
+
+      // 管道：buffer -> 解压 -> 文件写入
+      bufferStream.pipe(gunzipStream).pipe(fileWriteStream);
+
+      return new Promise((resolve, reject) => {
+        fileWriteStream.on('finish', () => resolve(filePath));
+        fileWriteStream.on('error', reject);
+        gunzipStream.on('error', error => {
+          console.error('Decompression error:', error);
+          reject(error);
+        });
+      });
     } catch (e: any) {
       console.error(`File Processing Failed For ${e.message}`);
     }
@@ -82,16 +89,12 @@ app.whenReady().then(() => {
       encoding: 'utf8'
     });
 
-    // let chunks = '';
-
     readStream.on('data', chunk => {
-      // chunks += chunk;
       event.sender.send('fileDataChunk', chunk);
     });
 
     readStream.on('end', () => {
       event.sender.send('fileDataEnd');
-      // event.sender.send('fileDataEnd', chunks);
     });
 
     readStream.on('error', err => {
