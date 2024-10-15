@@ -66,12 +66,23 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
     const bufferData: ArrayBuffer = e.target?.result as ArrayBuffer;
     // @ts-ignore
     const uint8Array = new Uint8Array(bufferData);
+    const regExp = /\.(json|replay|cast|part)(\.mp4|\.json|\.gz)?$/;
 
     if (fileName.includes('.tar')) {
       const extractedFiles: IExtractedFiles[] = await untar(bufferData).progress(() => {});
 
       for (const extractedFile of extractedFiles) {
-        const decompressFileName: string = extractedFile.name.split('.')[1];
+        const match = extractedFile.name.match(regExp);
+
+        const partJson: string = match?.[0] ? match?.[0] : '';
+        const decompressFileName: string = match?.[1] ? match?.[1] : '';
+
+        // part 文件的 json 以 .replay.json 结尾
+        if (partJson === '.replay.json') {
+          const decoder = new TextDecoder('utf-8');
+
+          jsonFile = JSON.parse(decoder.decode(new Uint8Array(extractedFile.buffer)));
+        }
 
         switch (decompressFileName) {
           case 'json': {
@@ -120,6 +131,17 @@ const handleFileOnLoad = (e: ProgressEvent<FileReader>, fileName: string) => {
               message.error(`Failed to decompress .gz file: ${error}`);
               reject(error);
             }
+            break;
+          }
+          case 'part': {
+            type = 'part';
+
+            const res = await handleGuaData(extractedFile.buffer, extractedFile.name);
+
+            if (res) {
+              videoUrl = res;
+            }
+
             break;
           }
         }
