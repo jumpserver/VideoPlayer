@@ -72,6 +72,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useMessage } from 'naive-ui';
@@ -117,6 +118,7 @@ const props = defineProps<{
   jsonFile?: IJsonFile;
 }>();
 
+const router = useRouter();
 const { t, locale } = useI18n();
 const message = useMessage();
 const fileStore = useFileStore();
@@ -219,6 +221,9 @@ const handleClose = async (e: Event, list: IVideoList) => {
  */
 const handlePlayVideo = (list: IVideoList) => {
   currentIndex.value = videoList.value.findIndex((item: IVideoList) => item.name === list.name) + 1;
+
+  router.back();
+
   emits('play', list.videoUrl, list.type, list.jsonFile);
 };
 

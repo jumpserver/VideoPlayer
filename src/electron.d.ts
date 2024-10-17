@@ -1,6 +1,7 @@
 interface Window {
   electron: {
     Buffer: typeof Buffer;
+    stopReading: () => void;
     unLinkFile: (filePath: string) => Promise<boolean>;
     writeFile: (arrayBuffer: ArrayBuffer, fileName: string) => Promise<string>;
     readFile: (filePath: string) => Promise<ArrayBuffer>;
