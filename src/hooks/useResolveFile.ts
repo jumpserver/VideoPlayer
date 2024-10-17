@@ -155,22 +155,32 @@ const handleFileOnLoad = (
           }
           case 'part': {
             type = 'part';
+
             const res = await handleGuaData(extractedFile.buffer, extractedFile.name, eventOptions);
 
             if (res) {
               videoUrl = res;
+
+              fileStore.setVideoList({
+                type,
+                jsonFile,
+                videoUrl,
+                name: extractedFile.name
+              });
             }
             break;
           }
         }
       }
 
-      fileStore.setVideoList({
-        type,
-        jsonFile,
-        videoUrl,
-        name: fileName.split('.')[0]
-      });
+      if (type !== 'part') {
+        fileStore.setVideoList({
+          type,
+          jsonFile,
+          videoUrl,
+          name: fileName.split('.')[0]
+        });
+      }
 
       resolve({
         jsonFile,

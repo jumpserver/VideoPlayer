@@ -10,7 +10,7 @@ import { BrowserWindow } from 'electron';
 
 export const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const CHUNK_SIZE = 1024 * 64;
+const CHUNK_SIZE = 64 * 1024;
 let window: any;
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
@@ -52,6 +52,17 @@ const createWindow = () => {
 app.whenReady().then(() => {
   createWindow();
 
+  let isReading = false;
+  let readStream: null | Readable;
+
+  ipcMain.handle('stopReading', () => {
+    if (isReading) {
+      console.log('Stopping read operation...');
+      isReading = false;
+      readStream?.destroy();
+    }
+  });
+
   ipcMain.handle('writeFile', async (_event, arrayBuffer, fileName) => {
     try {
       // 解压过程放入主进程
@@ -84,22 +95,46 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle('readFile', (event, filePath) => {
-    const readStream = createReadStream(filePath, {
+    console.log(filePath);
+    console.log(readStream);
+
+    if (readStream) {
+      isReading = false;
+      readStream.destroy();
+      readStream = null;
+    }
+
+    isReading = true;
+
+    readStream = createReadStream(filePath, {
       highWaterMark: CHUNK_SIZE,
       encoding: 'utf8'
     });
 
     readStream.on('data', chunk => {
+      if (!isReading) {
+        readStream?.destroy();
+        return;
+      }
+
       event.sender.send('fileDataChunk', chunk);
     });
 
-    readStream.on('end', () => {
-      event.sender.send('fileDataEnd');
+    readStream.once('end', () => {
+      if (isReading) {
+        event.sender.send('fileDataEnd');
+      }
+      isReading = false;
+      readStream?.destroy();
+      readStream = null;
     });
 
-    readStream.on('error', err => {
-      console.error('Stream Error: ', err.message);
+    readStream.once('error', err => {
+      console.log('Stream Error: ', err.message);
       event.sender.send('fileDataError', err.message);
+      isReading = false;
+      readStream?.destroy();
+      readStream = null;
     });
   });
 

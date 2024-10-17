@@ -44,7 +44,7 @@
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useMessage } from 'naive-ui';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { PlayCircleOutline, StopCircleOutline } from '@vicons/ionicons5';
 // @ts-ignore
 import * as Guacamole from 'guacamole-common-js-jumpserver/dist/guacamole-common';
@@ -68,6 +68,50 @@ const currentPosition = ref('00:00');
 const isPlaying = ref(false);
 const isProcessing = ref(false);
 const loadingBuffer = ref(false);
+
+watch(
+  () => guaUrl.value,
+  newValue => {
+    // console.log('正在断开连接...');
+    // console.log(newValue);
+    // console.log('guaUrl.value', guaUrl.value);
+    //
+    // chunks.value = '';
+    // await loadResource();
+  }
+);
+
+const loadResource = async () => {
+  console.log('load');
+  const el = document.getElementById('guacamolePlayer') as HTMLElement;
+  const displayElement = display.getElement();
+
+  el.innerHTML = '';
+  el.appendChild(displayElement);
+
+  await window.electron.readFile(guaUrl.value);
+
+  window.electron.onFileDataChunk((_event, chunk) => {
+    try {
+      chunks.value += chunk.trim();
+    } catch (e) {
+      console.log(e);
+    }
+  });
+
+  window.electron.onFileDataEnd((_event, _chunks) => {
+    loadingBuffer.value = false;
+    recording.connect(chunks.value);
+    initRecordingEvent();
+    recording.play();
+    chunks.value = '';
+  });
+
+  window.electron.onFileDataError((_event, _errorMessage) => {
+    loadingBuffer.value = false;
+    message.error(t('errorLoadingFile'));
+  });
+};
 
 const initRecordingEvent = () => {
   recording.onerror = (message: string) => {
@@ -142,6 +186,11 @@ const zeroPad = (num: number, minLength: number) => {
   return str;
 };
 
+/**
+ * 格式化时间
+ *
+ * @param millis
+ */
 const formatTime = (millis: number) => {
   const totalSeconds = millis / 1000;
   const [hour, minute, second] = formatTimeWithSeconds(totalSeconds);
@@ -152,10 +201,19 @@ const formatTime = (millis: number) => {
   return time;
 };
 
+/**
+ * 格式化 toolTip
+ *
+ * @param value
+ */
 const formatTooltip = (value: number) => {
   return formatTime(value);
 };
 
+/**
+ * 处理进度条变化
+ * @param value
+ */
 const handleSliderChange = (value: number) => {
   isProcessing.value = true;
   recording.seek(value, () => {
@@ -164,29 +222,7 @@ const handleSliderChange = (value: number) => {
 };
 
 onMounted(async () => {
-  loadingBuffer.value = true;
-
-  const el: HTMLElement = document.getElementById('guacamolePlayer') as HTMLElement;
-  const displayElement = display.getElement();
-
-  el.appendChild(displayElement);
-
-  await window.electron.readFile(guaUrl.value);
-
-  window.electron.onFileDataChunk((_event, chunk) => {
-    chunk = chunk.trim();
-    chunks.value += chunk;
-  });
-
-  window.electron.onFileDataEnd((_event, _chunks) => {
-    loadingBuffer.value = false;
-    recording.connect(chunks.value);
-    initRecordingEvent();
-  });
-
-  window.electron.onFileDataError((_event, _errorMessage) => {
-    loadingBuffer.value = false;
-  });
+  await loadResource();
 });
 
 onUnmounted(() => {

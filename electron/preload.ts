@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('electron', {
   setTitle: () => ipcRenderer.invoke('set-title'),
+  stopReading: () => ipcRenderer.invoke('stopReading'),
   readFile: filePath => ipcRenderer.invoke('readFile', filePath),
   unLinkFile: filePath => ipcRenderer.invoke('unLinkFile', filePath),
   onFileDataEnd: callback => ipcRenderer.on('fileDataEnd', callback),
