@@ -12,7 +12,7 @@
             <n-flex h-full justify="center" align="center">
               <Upload v-if="!showPlayer" @parser="handleParser" />
               <template v-else>
-                <router-view></router-view>
+                <router-view :key="route.fullPath"></router-view>
               </template>
             </n-flex>
           </n-gi>
@@ -37,12 +37,13 @@ import Header from '@/layouts/Header/index.vue';
 import Upload from './Content/Upload/index.vue';
 import SliceList from './Content/SliceList/index.vue';
 
-import { nextTick, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useMessage } from 'naive-ui';
 import { useResolveFile } from '@/hooks/useResolveFile.ts';
 import type { UploadFileInfo } from 'naive-ui';
 
+const route = useRoute();
 const router = useRouter();
 const message = useMessage();
 const { fileParser } = useResolveFile();
@@ -92,7 +93,6 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
   switch (type) {
     case 'mp4': {
       showPlayer.value = true;
-
       currentPartJsonFile.value = jsonFile;
 
       router.push({
@@ -105,7 +105,6 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
     case 'cast': {
       showPlayer.value = true;
       currentPartJsonFile.value = jsonFile;
-
       router.push({
         name: 'asciicastPlayer',
         params: { castUrl: videoUrl }
@@ -115,7 +114,6 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
     }
     case 'gua': {
       showPlayer.value = true;
-
       router.push({
         name: 'guaPlayer',
         params: { guaUrl: videoUrl }
@@ -129,6 +127,7 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
       currentPartJsonFile.value = jsonFile;
 
       setTimeout(() => {
+        console.log('statr');
         router.push({
           name: 'guaPlayer',
           params: { guaUrl: videoUrl }

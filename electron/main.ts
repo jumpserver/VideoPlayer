@@ -52,21 +52,11 @@ const createWindow = () => {
 app.whenReady().then(() => {
   createWindow();
 
-  let isReading = false;
   let readStream: null | Readable;
-
-  ipcMain.handle('stopReading', () => {
-    if (isReading) {
-      console.log('Stopping read operation...');
-      isReading = false;
-      readStream?.destroy();
-    }
-  });
 
   ipcMain.handle('writeFile', async (_event, arrayBuffer, fileName) => {
     try {
       // 解压过程放入主进程
-
       const buffer = Buffer.from(arrayBuffer);
       const filePath = join(app.getPath('userData'), fileName);
 
@@ -95,16 +85,11 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle('readFile', (event, filePath) => {
-    console.log(filePath);
-    console.log(readStream);
-
     if (readStream) {
-      isReading = false;
+      readStream.removeAllListeners();
       readStream.destroy();
       readStream = null;
     }
-
-    isReading = true;
 
     readStream = createReadStream(filePath, {
       highWaterMark: CHUNK_SIZE,
@@ -112,19 +97,11 @@ app.whenReady().then(() => {
     });
 
     readStream.on('data', chunk => {
-      if (!isReading) {
-        readStream?.destroy();
-        return;
-      }
-
       event.sender.send('fileDataChunk', chunk);
     });
 
     readStream.once('end', () => {
-      if (isReading) {
-        event.sender.send('fileDataEnd');
-      }
-      isReading = false;
+      event.sender.send('fileDataEnd');
       readStream?.destroy();
       readStream = null;
     });
@@ -132,7 +109,6 @@ app.whenReady().then(() => {
     readStream.once('error', err => {
       console.log('Stream Error: ', err.message);
       event.sender.send('fileDataError', err.message);
-      isReading = false;
       readStream?.destroy();
       readStream = null;
     });

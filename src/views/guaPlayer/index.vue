@@ -41,10 +41,11 @@
 </template>
 
 <script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useMessage } from 'naive-ui';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watchEffect, onBeforeUnmount } from 'vue';
 import { PlayCircleOutline, StopCircleOutline } from '@vicons/ionicons5';
 // @ts-ignore
 import * as Guacamole from 'guacamole-common-js-jumpserver/dist/guacamole-common';
@@ -56,9 +57,9 @@ const { t } = useI18n();
 const route = useRoute();
 const guaUrl = computed(() => route.params?.guaUrl as string);
 
-const tunnel = new Guacamole.StaticHTTPTunnel();
-const recording = new Guacamole.SessionRecording(tunnel);
-const display = recording.getDisplay();
+let tunnel: any;
+let recording: any;
+let display: any;
 
 const max = ref(100);
 const currentPercent = ref(0);
@@ -68,21 +69,27 @@ const currentPosition = ref('00:00');
 const isPlaying = ref(false);
 const isProcessing = ref(false);
 const loadingBuffer = ref(false);
+const fileDataEndCalled = ref(false);
 
-watch(
-  () => guaUrl.value,
-  newValue => {
-    // console.log('正在断开连接...');
-    // console.log(newValue);
-    // console.log('guaUrl.value', guaUrl.value);
-    //
-    // chunks.value = '';
-    // await loadResource();
+const handleFileDataChunk = (_event, chunk) => {
+  try {
+    chunks.value += chunk.trim();
+  } catch (e) {
+    console.log(e);
   }
-);
+};
 
-const loadResource = async () => {
-  console.log('load');
+const handleFileDataError = (_event, _chunks) => {
+  loadingBuffer.value = false;
+  message.error(t('errorLoadingFile'));
+};
+
+let handleFileDataEnd: any;
+
+const loadResource = async (record: any) => {
+  window.electron.removeFileDataChunk(handleFileDataChunk);
+  window.electron.removeFileDataError(handleFileDataError);
+
   const el = document.getElementById('guacamolePlayer') as HTMLElement;
   const displayElement = display.getElement();
 
@@ -91,56 +98,67 @@ const loadResource = async () => {
 
   await window.electron.readFile(guaUrl.value);
 
-  window.electron.onFileDataChunk((_event, chunk) => {
-    try {
-      chunks.value += chunk.trim();
-    } catch (e) {
-      console.log(e);
+  chunks.value = '';
+
+  window.electron.onFileDataChunk(handleFileDataChunk);
+
+  handleFileDataEnd = (_event, _chunks) => {
+    if (fileDataEndCalled.value) {
+      chunks.value = '';
+      window.electron.removeFileDataChunk(handleFileDataChunk);
+      window.electron.removeFileDataEnd(handleFileDataEnd);
+      window.electron.removeFileDataError(handleFileDataError);
+      return;
     }
-  });
 
-  window.electron.onFileDataEnd((_event, _chunks) => {
+    fileDataEndCalled.value = true;
     loadingBuffer.value = false;
-    recording.connect(chunks.value);
-    initRecordingEvent();
-    recording.play();
+
+    console.log('loadResource recording2', record);
+
+    record.connect(chunks.value);
+
     chunks.value = '';
-  });
+    initRecordingEvent(record);
+    record.play();
+  };
 
-  window.electron.onFileDataError((_event, _errorMessage) => {
-    loadingBuffer.value = false;
-    message.error(t('errorLoadingFile'));
-  });
+  window.electron.onFileDataEnd(handleFileDataEnd);
+
+  window.electron.onFileDataError(handleFileDataError);
 };
 
-const initRecordingEvent = () => {
-  recording.onerror = (message: string) => {
+const initRecordingEvent = record => {
+  record.onerror = (message: string) => {
     console.log('Error occurred: ' + message);
   };
 
-  recording.onplay = () => {
+  record.onplay = () => {
     isPlaying.value = true;
   };
 
-  recording.onseek = (position: number) => {
+  record.onseek = (position: number) => {
     currentPercent.value = position;
 
     currentPosition.value = formatTime(position);
   };
 
-  recording.onpause = () => {
+  record.onpause = () => {
     isPlaying.value = false;
   };
 
-  recording.play();
+  record.play();
 
   // todo))
   display.scale(0.42);
 
-  max.value = recording.getDuration();
-  totalDuration.value = formatTime(recording.getDuration());
+  max.value = record.getDuration();
+  totalDuration.value = formatTime(record.getDuration());
 };
 
+/**
+ * @description 暂停与播放按键
+ */
 const handleVideoPlay = () => {
   if (!recording.isPlaying()) {
     recording.play();
@@ -151,6 +169,11 @@ const handleVideoPlay = () => {
   }
 };
 
+/**
+ * 格式化时间
+ *
+ * @param seconds
+ */
 const formatTimeWithSeconds = (seconds: number) => {
   let hour = 0,
     minute = 0,
@@ -222,11 +245,46 @@ const handleSliderChange = (value: number) => {
 };
 
 onMounted(async () => {
-  await loadResource();
+  tunnel = new Guacamole.StaticHTTPTunnel();
+  recording = new Guacamole.SessionRecording(tunnel);
+  display = recording.getDisplay();
+
+  console.log('onMounted Recording', recording);
+
+  await loadResource(recording);
+});
+
+watchEffect(() => {
+  console.log(guaUrl);
+});
+
+onBeforeUnmount(() => {
+  console.log('onBeforeUnmount', display);
+  console.log('onBeforeUnmount', tunnel);
+
+  window.electron.removeFileDataChunk(handleFileDataChunk);
+  window.electron.removeFileDataEnd(handleFileDataEnd);
+  window.electron.removeFileDataError(handleFileDataError);
+
+  if (recording) {
+    recording.pause();
+
+    recording.disconnect();
+
+    recording = null;
+    chunks.value = '';
+
+    const el = document.getElementById('guacamolePlayer') as HTMLElement;
+    el.removeChild(display.getElement());
+
+    console.log(el);
+  }
 });
 
 onUnmounted(() => {
-  recording.disconnect();
   chunks.value = '';
+  currentPercent.value = 0;
+  currentPosition.value = '00:00';
+  isPlaying.value = false;
 });
 </script>
