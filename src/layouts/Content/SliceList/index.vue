@@ -38,7 +38,7 @@
             <n-list-item
               v-for="(list, index) of videoList"
               :key="list.name"
-              @click="handlePlayVideo(list)"
+              @click.prevent="handlePlayVideo(list)"
             >
               <n-popover trigger="hover">
                 <template #trigger>
@@ -221,9 +221,6 @@ const handleClose = async (e: Event, list: IVideoList) => {
  */
 const handlePlayVideo = (list: IVideoList) => {
   currentIndex.value = videoList.value.findIndex((item: IVideoList) => item.name === list.name) + 1;
-
-  router.back();
-
   emits('play', list.videoUrl, list.type, list.jsonFile);
 };
 
