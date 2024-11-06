@@ -57,7 +57,9 @@
     },
     "linux": {
       "icon": "assets",
-      "target": ["zip"]
+      "target": [
+        "zip"
+      ]
     }
   },
   "dependencies": {
@@ -90,7 +92,6 @@
     "@vitejs/plugin-vue": "^5.1.2",
     "electron": "^32.0.1",
     "electron-builder": "^24.13.3",
-    "electron-devtools-installer": "^3.2.0",
     "eslint": "^9.9.1",
     "naive-ui": "^2.39.0",
     "prettier": "^3.3.3",

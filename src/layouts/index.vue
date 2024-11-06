@@ -6,10 +6,15 @@
         <Header @back="handleBack" />
       </n-layout-header>
       <n-divider />
-      <n-layout-content w-full main-bg-base class="h-[calc(100%-56px)]">
-        <n-grid :cols="12" h-full w-full>
+      <n-layout-content
+        w-full
+        main-bg-base
+        class="h-[calc(100%-56px)]"
+        content-style="overflow: hidden"
+      >
+        <n-grid :cols="12" w-full style="height: calc(100vh - 60px)">
           <n-gi :span="8">
-            <n-flex h-full justify="center" align="center">
+            <n-flex justify="center" align="center" style="height: 100%">
               <Upload v-if="!showPlayer" @parser="handleParser" />
               <template v-else>
                 <router-view :key="route.fullPath"></router-view>
@@ -17,7 +22,7 @@
             </n-flex>
           </n-gi>
           <n-gi :span="4">
-            <n-flex h-full justify="center" align="center">
+            <n-flex justify="center" align="center" style="height: 100%">
               <SliceList
                 @play="handlePlay"
                 :json-file="currentPartJsonFile"
