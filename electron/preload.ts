@@ -2,16 +2,25 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('electron', {
   setTitle: () => ipcRenderer.invoke('set-title'),
-  remove: () => ipcRenderer.invoke('remove'),
-  readFile: filePath => ipcRenderer.invoke('readFile', filePath),
-  unLinkFile: filePath => ipcRenderer.invoke('unLinkFile', filePath),
-  writeFile: (buffer, fileName) => ipcRenderer.invoke('writeFile', buffer, fileName),
+  readFile: (filePath: string) => ipcRenderer.invoke('readFile', filePath),
+  unLinkFile: (filePath: string) => ipcRenderer.invoke('unLinkFile', filePath),
+  writeFile: (buffer: any, fileName: string) => ipcRenderer.invoke('writeFile', buffer, fileName),
 
-  onFileDataEnd: callback => ipcRenderer.on('fileDataEnd', callback),
-  onFileDataChunk: callback => ipcRenderer.on('fileDataChunk', callback),
-  onFileDataError: callback => ipcRenderer.on('fileDataError', callback),
+  // @ts-ignore
+  onFileDataEnd: callback => {
+    ipcRenderer.removeAllListeners('fileDataEnd');
+    ipcRenderer.on('fileDataEnd', callback);
+  },
 
-  removeFileDataEnd: callback => ipcRenderer.removeListener('fileDataEnd', callback),
-  removeFileDataChunk: callback => ipcRenderer.removeListener('fileDataChunk', callback),
-  removeFileDataError: callback => ipcRenderer.removeListener('fileDataError', callback)
+  // @ts-ignore
+  onFileDataChunk: callback => {
+    ipcRenderer.removeAllListeners('fileDataChunk');
+    ipcRenderer.on('fileDataChunk', (_event, chunk) => callback(chunk));
+  },
+
+  // @ts-ignore
+  onFileDataError: callback => {
+    ipcRenderer.removeAllListeners('fileDataError');
+    ipcRenderer.on('fileDataError', (_event, error) => callback(error));
+  }
 });

@@ -127,7 +127,6 @@ const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
       currentPartJsonFile.value = jsonFile;
 
       setTimeout(() => {
-        console.log('statr');
         router.push({
           name: 'guaPlayer',
           params: { guaUrl: videoUrl }
