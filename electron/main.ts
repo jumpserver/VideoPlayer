@@ -17,8 +17,8 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
 const createWindow = () => {
   window = new BrowserWindow({
-    width: 1180,
-    height: 730,
+    width: 1300,
+    height: 800,
     minWidth: 1024,
     minHeight: 600,
     useContentSize: true,
@@ -100,13 +100,13 @@ app.whenReady().then(() => {
       event.sender.send('fileDataChunk', chunk);
     });
 
-    readStream.once('end', () => {
+    readStream.on('end', () => {
       event.sender.send('fileDataEnd');
       readStream?.destroy();
       readStream = null;
     });
 
-    readStream.once('error', err => {
+    readStream.on('error', err => {
       console.log('Stream Error: ', err.message);
       event.sender.send('fileDataError', err.message);
       readStream?.destroy();

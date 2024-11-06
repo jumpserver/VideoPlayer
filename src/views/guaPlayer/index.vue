@@ -41,11 +41,10 @@
 </template>
 
 <script setup lang="ts">
-import { useDebounceFn } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useMessage } from 'naive-ui';
-import { computed, onMounted, onUnmounted, ref, watchEffect, onBeforeUnmount } from 'vue';
+import { computed, onMounted, onUnmounted, ref, onBeforeUnmount } from 'vue';
 import { PlayCircleOutline, StopCircleOutline } from '@vicons/ionicons5';
 // @ts-ignore
 import * as Guacamole from 'guacamole-common-js-jumpserver/dist/guacamole-common';
@@ -71,25 +70,7 @@ const isProcessing = ref(false);
 const loadingBuffer = ref(false);
 const fileDataEndCalled = ref(false);
 
-const handleFileDataChunk = (_event, chunk) => {
-  try {
-    chunks.value += chunk.trim();
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-const handleFileDataError = (_event, _chunks) => {
-  loadingBuffer.value = false;
-  message.error(t('errorLoadingFile'));
-};
-
-let handleFileDataEnd: any;
-
 const loadResource = async (record: any) => {
-  window.electron.removeFileDataChunk(handleFileDataChunk);
-  window.electron.removeFileDataError(handleFileDataError);
-
   const el = document.getElementById('guacamolePlayer') as HTMLElement;
   const displayElement = display.getElement();
 
@@ -100,32 +81,34 @@ const loadResource = async (record: any) => {
 
   chunks.value = '';
 
-  window.electron.onFileDataChunk(handleFileDataChunk);
+  window.electron.onFileDataChunk(chunk => {
+    try {
+      chunks.value += chunk.trim();
+    } catch (e) {
+      console.log(e);
+    }
+  });
 
-  handleFileDataEnd = (_event, _chunks) => {
+  window.electron.onFileDataEnd(() => {
     if (fileDataEndCalled.value) {
       chunks.value = '';
-      window.electron.removeFileDataChunk(handleFileDataChunk);
-      window.electron.removeFileDataEnd(handleFileDataEnd);
-      window.electron.removeFileDataError(handleFileDataError);
       return;
     }
 
     fileDataEndCalled.value = true;
     loadingBuffer.value = false;
 
-    console.log('loadResource recording2', record);
-
     record.connect(chunks.value);
 
     chunks.value = '';
     initRecordingEvent(record);
     record.play();
-  };
+  });
 
-  window.electron.onFileDataEnd(handleFileDataEnd);
-
-  window.electron.onFileDataError(handleFileDataError);
+  window.electron.onFileDataError(() => {
+    loadingBuffer.value = false;
+    message.error(t('errorLoadingFile'));
+  });
 };
 
 const initRecordingEvent = record => {
@@ -249,23 +232,10 @@ onMounted(async () => {
   recording = new Guacamole.SessionRecording(tunnel);
   display = recording.getDisplay();
 
-  console.log('onMounted Recording', recording);
-
   await loadResource(recording);
 });
 
-watchEffect(() => {
-  console.log(guaUrl);
-});
-
 onBeforeUnmount(() => {
-  console.log('onBeforeUnmount', display);
-  console.log('onBeforeUnmount', tunnel);
-
-  window.electron.removeFileDataChunk(handleFileDataChunk);
-  window.electron.removeFileDataEnd(handleFileDataEnd);
-  window.electron.removeFileDataError(handleFileDataError);
-
   if (recording) {
     recording.pause();
 
@@ -276,8 +246,6 @@ onBeforeUnmount(() => {
 
     const el = document.getElementById('guacamolePlayer') as HTMLElement;
     el.removeChild(display.getElement());
-
-    console.log(el);
   }
 });
 
