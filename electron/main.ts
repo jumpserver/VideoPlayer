@@ -3,7 +3,6 @@ import { Readable } from 'stream';
 import { createGunzip } from 'zlib';
 import { fileURLToPath } from 'node:url';
 import { createReadStream, createWriteStream, unlink } from 'fs';
-import install, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
 
 import { app, ipcMain } from 'electron';
 import { BrowserWindow } from 'electron';
@@ -130,10 +129,6 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('ready', () => {
-  install(VUEJS3_DEVTOOLS).then((_r: string) => {});
 });
 
 app.on('activate', () => {

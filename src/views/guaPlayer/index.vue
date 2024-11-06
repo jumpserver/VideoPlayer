@@ -13,8 +13,8 @@
       <template #description> {{ t('parsing') }} </template>
     </n-spin>
   </n-space>
-  <div id="guacamolePlayer" w-730px h-520px></div>
-  <n-flex align="center" :wrap="false" w-full px-10px>
+  <div id="guacamolePlayer" w-full style="height: 90%"></div>
+  <n-flex align="center" :wrap="false" w-full px-10px style="height: 10%">
     <n-flex :wrap="false" w-160px align="center">
       <n-button
         v-if="!isPlaying"
@@ -44,7 +44,7 @@
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useMessage } from 'naive-ui';
-import { computed, onMounted, onUnmounted, ref, onBeforeUnmount } from 'vue';
+import { computed, onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue';
 import { PlayCircleOutline, StopCircleOutline } from '@vicons/ionicons5';
 // @ts-ignore
 import * as Guacamole from 'guacamole-common-js-jumpserver/dist/guacamole-common';
@@ -60,6 +60,7 @@ let tunnel: any;
 let recording: any;
 let display: any;
 
+const scale = ref(0);
 const max = ref(100);
 const currentPercent = ref(0);
 const chunks = ref('');
@@ -101,8 +102,7 @@ const loadResource = async (record: any) => {
     record.connect(chunks.value);
 
     chunks.value = '';
-    initRecordingEvent(record);
-    record.play();
+    initRecordingEvent(record, el);
   });
 
   window.electron.onFileDataError(() => {
@@ -111,7 +111,7 @@ const loadResource = async (record: any) => {
   });
 };
 
-const initRecordingEvent = record => {
+const initRecordingEvent = (record, el: HTMLElement) => {
   record.onerror = (message: string) => {
     console.log('Error occurred: ' + message);
   };
@@ -132,11 +132,40 @@ const initRecordingEvent = record => {
 
   record.play();
 
-  // todo))
-  display.scale(0.42);
+  const parentEl = el.parentElement as HTMLElement;
 
-  max.value = record.getDuration();
-  totalDuration.value = formatTime(record.getDuration());
+  setTimeout(() => {
+    if (parentEl) {
+      const parentWidth = parentEl.offsetWidth;
+      const parentHeight = parentEl.offsetHeight;
+
+      let width = display.getDefaultLayer().width;
+      let height = display.getDefaultLayer().height;
+
+      if (width >= 3000) {
+        width = width / 2;
+      }
+
+      if (width <= 700) {
+        height = 1060;
+      }
+
+      const targetWidth = parentWidth;
+      const targetHeight = parentHeight;
+
+      const scaleWidth = targetWidth / width;
+      const scaleHeight = targetHeight / height;
+
+      scale.value = Math.min(scaleWidth, scaleHeight);
+    } else {
+      console.log('No parent element found');
+    }
+
+    display.scale(scale.value);
+
+    max.value = record.getDuration();
+    totalDuration.value = formatTime(record.getDuration());
+  }, 100);
 };
 
 /**
@@ -241,6 +270,7 @@ onBeforeUnmount(() => {
 
     recording.disconnect();
 
+    tunnel = null;
     recording = null;
     chunks.value = '';
 
