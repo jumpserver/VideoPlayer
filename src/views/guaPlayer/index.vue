@@ -95,8 +95,6 @@ const loadResource = async (record: any) => {
       return;
     }
 
-    console.log('File data end');
-
     fileDataEndCalled.value = true;
     loadingBuffer.value = false;
 
@@ -233,8 +231,6 @@ onMounted(async () => {
   tunnel = new Guacamole.StaticHTTPTunnel();
   recording = new Guacamole.SessionRecording(tunnel);
   display = recording.getDisplay();
-
-  console.log('onMounted Recording', recording);
 
   await loadResource(recording);
 });

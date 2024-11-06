@@ -85,8 +85,6 @@ app.whenReady().then(() => {
   });
 
   ipcMain.handle('readFile', (event, filePath) => {
-    console.log(filePath);
-
     if (readStream) {
       readStream.removeAllListeners();
       readStream.destroy();
