@@ -6,13 +6,12 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
-    "build": "node build/index.js",
-    "buildapp": "vite build && electron-builder --mac --win --linux",
+    "build": "vite build && electron-builder --mac --win --linux",
     "preview": "vite preview"
   },
   "build": {
     "asar": false,
-    "productName": "JumpServer_Video_Player",
+    "productName": "JumpServerVideoPlayer",
     "directories": {
       "output": "release/",
       "buildResources": "assets"
