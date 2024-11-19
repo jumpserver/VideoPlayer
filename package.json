@@ -1,12 +1,12 @@
 {
   "name": "video-player",
   "private": true,
-  "version": "0.1.10",
+  "version": "0.2.0",
   "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && electron-builder --mac --win --linux",
+    "build": "vite build && electron-builder --linux --mac --win",
     "preview": "vite preview"
   },
   "build": {
@@ -38,27 +38,34 @@
     "mac": {
       "icon": "assets/player.icns",
       "identity": null,
-      "target": [
-        "dmg",
-        "zip"
-      ]
+      "target": {
+        "target": "default",
+        "arch": [
+          "arm64",
+          "x64"
+        ]
+      }
     },
     "win": {
       "icon": "assets/icon.ico",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "ia32"
-          ]
-        }
-      ]
+      "target": {
+        "target": "nsis",
+        "arch": [
+          "ia32",
+          "x64"
+        ]
+      },
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
     },
     "linux": {
-      "icon": "assets",
-      "target": [
-        "zip"
-      ]
+      "target": {
+        "target": "AppImage",
+        "arch": [
+          "x64",
+          "arm64"
+        ]
+      },
+      "category": "Tool"
     }
   },
   "dependencies": {
