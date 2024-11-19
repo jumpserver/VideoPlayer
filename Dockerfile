@@ -1,4 +1,4 @@
-FROM node:16.20-bullseye-slim as as stage-build
+FROM node:20-bullseye-slim as as stage-build
 ARG TARGETARCH
 
 ARG DEPENDENCIES="                    \
