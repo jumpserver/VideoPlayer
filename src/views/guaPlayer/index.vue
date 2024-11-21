@@ -132,6 +132,45 @@ const initRecordingEvent = (record, el: HTMLElement) => {
 
   record.play();
 
+  window.addEventListener('resize', () => {
+    const parentEl = el.parentElement as HTMLElement;
+
+    setTimeout(() => {
+      if (parentEl) {
+        const parentWidth = parentEl.offsetWidth;
+        const parentHeight = parentEl.offsetHeight;
+
+        let width = display.getDefaultLayer().width;
+        let height = display.getDefaultLayer().height;
+
+        if (width >= 3000) {
+          width = width / 2;
+        }
+
+        if (width <= 700) {
+          height = 1060;
+        }
+
+        const targetWidth = parentWidth;
+        const targetHeight = parentHeight;
+
+        const scaleWidth = targetWidth / width;
+        const scaleHeight = targetHeight / height;
+
+        scale.value = Math.min(scaleWidth, scaleHeight);
+      } else {
+        console.log('No parent element found');
+      }
+
+      display.scale(scale.value);
+
+      max.value = record.getDuration();
+      totalDuration.value = formatTime(record.getDuration());
+    }, 100);
+
+  })
+
+
   const parentEl = el.parentElement as HTMLElement;
 
   setTimeout(() => {
