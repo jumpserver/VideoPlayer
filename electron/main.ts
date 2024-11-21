@@ -21,6 +21,7 @@ const createWindow = () => {
     minWidth: 1024,
     minHeight: 600,
     useContentSize: true,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, 'preload.mjs'),
       // 允许在渲染进程（网页）中使用 Node.js 的 API
