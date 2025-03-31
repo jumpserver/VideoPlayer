@@ -13,7 +13,7 @@ const castUrl = computed(() => route.params?.castUrl as string);
 
 onMounted(async () => {
   AsciinemaPlayer.create(
-    'data:text/plain;base64,' + castUrl.value,
+    castUrl.value,
     document.getElementById('terminal')
   );
 

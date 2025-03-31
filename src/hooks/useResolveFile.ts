@@ -139,14 +139,11 @@ const handleFileOnLoad = (
             type = 'cast';
             try {
               const decompressedData: Uint8Array = gunzipSync(new Uint8Array(extractedFile.buffer));
+              
+              // 直接创建 Blob URL
+              const blob = new Blob([decompressedData], { type: 'application/octet-stream' });
 
-              //? 下面这种方式当数组结构太大时可能将无法转换
-              const binaryString: string = Array.from(decompressedData)
-                .map((byte: number) => String.fromCharCode(byte))
-                .join('');
-
-              //! btoa 只接受字符串输入，因此需要将解压的 Uint8Array 数据转为字符
-              videoUrl = btoa(binaryString);
+              videoUrl = URL.createObjectURL(blob);
             } catch (error) {
               message.error(`Failed to decompress .gz file: ${error}`);
               reject(error);
