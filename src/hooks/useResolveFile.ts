@@ -110,7 +110,6 @@ const handleFileOnLoad = (
           }
           case 'replay': {
             const isGua = extractedFile.name.split('.')[2] === 'gz';
-
             // gua 的文件后缀为 replay.gz
             if (isGua) {
               type = 'gua';
@@ -139,7 +138,7 @@ const handleFileOnLoad = (
             type = 'cast';
             try {
               const decompressedData: Uint8Array = gunzipSync(new Uint8Array(extractedFile.buffer));
-              
+
               // 直接创建 Blob URL
               const blob = new Blob([decompressedData], { type: 'application/octet-stream' });
 
@@ -196,7 +195,7 @@ const handleFileOnLoad = (
           if (isGua) {
             type = 'gua';
             // @ts-ignore
-            const res = await handleGuaData(e.currentTarget?.result, fileName);
+            const res = await handleGuaData(e.currentTarget?.result, fileName, eventOptions);
 
             if (res) {
               videoUrl = res;
