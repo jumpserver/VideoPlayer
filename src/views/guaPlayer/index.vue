@@ -107,7 +107,6 @@ const loadResource = async (record: any) => {
 
   window.electron.onFileDataError(() => {
     loadingBuffer.value = false;
-    message.error(t('errorLoadingFile'));
   });
 };
 
