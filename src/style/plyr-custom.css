@@ -1,8 +1,0 @@
-@import "plyr-vue/dist/plyr-vue.css";
-
-:root {
-  --plyr-color-main: #1AB394;
-  --plyr-color-controls: #1AB394;
-  --plyr-color-progress:#1AB394;
-  --plyr-color-volume: #1AB394;
-}
