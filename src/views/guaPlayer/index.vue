@@ -37,6 +37,19 @@
       :format-tooltip="formatTooltip"
       @update:value="handleSliderChange"
     />
+    <n-flex :wrap="false" w-200px align="center" justify="end">
+      <n-button-group>
+        <n-button size="small" @click="handleZoomOut" :disabled="scale <= 0.1">
+          <n-icon :component="RemoveOutline" size="16" />
+        </n-button>
+        <n-button size="small" @click="handleZoomReset">
+          <n-text style="font-size: 12px">{{ Math.round(scale * 100) }}%</n-text>
+        </n-button>
+        <n-button size="small" @click="handleZoomIn" :disabled="scale >= 2.0">
+          <n-icon :component="AddOutline" size="16" />
+        </n-button>
+      </n-button-group>
+    </n-flex>
   </n-flex>
 </template>
 
@@ -45,7 +58,7 @@ import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useMessage } from 'naive-ui';
 import { computed, onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue';
-import { PlayCircleOutline, StopCircleOutline } from '@vicons/ionicons5';
+import { PlayCircleOutline, StopCircleOutline, AddOutline, RemoveOutline } from '@vicons/ionicons5';
 // @ts-ignore
 import * as Guacamole from 'guacamole-common-js-jumpserver/dist/guacamole-common';
 
@@ -99,6 +112,26 @@ const loadResource = async (record: any) => {
     fileDataEndCalled.value = true;
     loadingBuffer.value = false;
 
+    // 确保 Display 在连接前已经准备好
+    const defaultLayer = display.getDefaultLayer();
+    if (defaultLayer) {
+      // 如果层尺寸为0，设置默认尺寸
+      if (defaultLayer.width === 0 || defaultLayer.height === 0) {
+        console.warn('Setting default layer size before connect');
+        if (defaultLayer.resize) {
+          defaultLayer.resize(1024, 768);
+        }
+      }
+
+      // 确保 Canvas 元素存在
+      const canvas = defaultLayer.getCanvas();
+      if (canvas && (canvas.width === 0 || canvas.height === 0)) {
+        console.warn('Canvas has zero size, resizing');
+        canvas.width = 1024;
+        canvas.height = 768;
+      }
+    }
+
     record.connect(chunks.value);
 
     chunks.value = '';
@@ -121,7 +154,6 @@ const initRecordingEvent = (record, el: HTMLElement) => {
 
   record.onseek = (position: number) => {
     currentPercent.value = position;
-
     currentPosition.value = formatTime(position);
   };
 
@@ -180,21 +212,81 @@ const initRecordingEvent = (record, el: HTMLElement) => {
       let width = display.getDefaultLayer().width;
       let height = display.getDefaultLayer().height;
 
-      if (width >= 3000) {
-        width = width / 2;
+      // 如果 Display 尺寸为 0，设置默认尺寸
+      if (width === 0 || height === 0) {
+        console.warn('Display has zero size, setting default size...');
+        width = 1024;
+        height = 768;
+
+        // 尝试设置默认层的尺寸
+        const defaultLayer = display.getDefaultLayer();
+        if (defaultLayer.resize) {
+          defaultLayer.resize(width, height);
+        }
       }
 
-      if (width <= 700) {
-        height = 1060;
+      // 智能处理超高分辨率
+      if (width > 2560) {
+        // 4K 及以上分辨率缩放
+        width = width * 0.5;
+        height = height * 0.5;
+      } else if (width > 1920) {
+        // 2K 分辨率轻微缩放
+        width = width * 0.8;
+        height = height * 0.8;
       }
 
-      const targetWidth = parentWidth;
-      const targetHeight = parentHeight;
+      // 处理异常尺寸比例
+      const originalRatio = width / height;
+      if (originalRatio > 3) {
+        // 超宽屏处理
+        height = width / 2.5;
+      } else if (originalRatio < 0.5) {
+        // 超高屏处理
+        width = height * 0.8;
+      }
 
-      const scaleWidth = targetWidth / width;
-      const scaleHeight = targetHeight / height;
+      // 确保最小显示尺寸
+      const minWidth = 320;
+      const minHeight = 240;
+      if (width < minWidth) width = minWidth;
+      if (height < minHeight) height = minHeight;
 
-      scale.value = Math.min(scaleWidth, scaleHeight);
+      // 计算缩放比例
+      const containerRatio = parentWidth / parentHeight;
+      const videoRatio = width / height;
+
+      let scaleWidth = parentWidth / width;
+      let scaleHeight = parentHeight / height;
+
+      // 智能缩放策略
+      if (containerRatio > videoRatio) {
+        // 容器更宽，以高度为准
+        scale.value = scaleHeight;
+      } else {
+        // 容器更高，以宽度为准
+        scale.value = scaleWidth;
+      }
+
+      // 应用缩放限制
+      const maxScale = 2.0; // 最大放大2倍
+      const minScale = 0.1; // 最小缩小到0.1倍
+
+      scale.value = Math.min(scale.value, maxScale);
+      scale.value = Math.max(scale.value, minScale);
+
+      // 确保缩放值有效
+      if (scale.value <= 0 || !isFinite(scale.value)) {
+        scale.value = 1;
+      }
+
+      console.log('缩放信息:', {
+        原始尺寸: `${display.getDefaultLayer().width}x${display.getDefaultLayer().height}`,
+        处理后尺寸: `${width}x${height}`,
+        容器尺寸: `${parentWidth}x${parentHeight}`,
+        缩放比例: scale.value.toFixed(2),
+        显示尺寸: `${Math.round(width * scale.value)}x${Math.round(height * scale.value)}`
+      });
     } else {
       console.log('No parent element found');
     }
@@ -203,6 +295,18 @@ const initRecordingEvent = (record, el: HTMLElement) => {
 
     max.value = record.getDuration();
     totalDuration.value = formatTime(record.getDuration());
+
+    // 最后再次验证 Canvas 尺寸
+    setTimeout(() => {
+      const finalLayer = display.getDefaultLayer();
+      if (finalLayer.width === 0 || finalLayer.height === 0) {
+        console.warn('Final layer still has zero size, forcing resize...');
+        if (finalLayer.resize) {
+          finalLayer.resize(1024, 768);
+          display.scale(scale.value);
+        }
+      }
+    }, 100);
   }, 100);
 };
 
@@ -210,6 +314,18 @@ const initRecordingEvent = (record, el: HTMLElement) => {
  * @description 暂停与播放按键
  */
 const handleVideoPlay = () => {
+  // 检查并修复 Canvas 尺寸
+  const currentLayer = display.getDefaultLayer();
+  if (currentLayer.width === 0 || currentLayer.height === 0) {
+    console.warn('Canvas has zero size during play/pause, fixing...');
+    if (currentLayer.resize) {
+      currentLayer.resize(1024, 768);
+      if (scale.value && scale.value > 0) {
+        display.scale(scale.value);
+      }
+    }
+  }
+
   if (!recording.isPlaying()) {
     recording.play();
     isPlaying.value = true;
@@ -288,24 +404,241 @@ const formatTooltip = (value: number) => {
  * @param value
  */
 const handleSliderChange = (value: number) => {
+  if (isProcessing.value) return;
+
   isProcessing.value = true;
-  recording.seek(value, () => {
+
+  // 保存当前的 Display 尺寸
+  const currentWidth = display.getDefaultLayer().width;
+  const currentHeight = display.getDefaultLayer().height;
+
+  // 重写 seek 回调，确保 Canvas 尺寸正确
+  const originalSeekCallback = () => {
     isProcessing.value = false;
-  });
+  };
+
+  // 创建一个包装的回调函数
+  const wrappedCallback = () => {
+    // 检查 seek 后的 Canvas 尺寸
+    setTimeout(() => {
+      const afterSeekWidth = display.getDefaultLayer().width;
+      const afterSeekHeight = display.getDefaultLayer().height;
+
+      // 如果尺寸变为 0，恢复到之前的尺寸
+      if (afterSeekWidth === 0 || afterSeekHeight === 0) {
+        console.warn('Canvas size became zero after seek, restoring...');
+
+        // 尝试恢复尺寸
+        const layerToFix = display.getDefaultLayer();
+        if (layerToFix.resize) {
+          layerToFix.resize(currentWidth || 1024, currentHeight || 768);
+        }
+
+        // 重新应用缩放
+        if (scale.value && scale.value > 0) {
+          display.scale(scale.value);
+        }
+      }
+
+      originalSeekCallback();
+    }, 50);
+  };
+
+  // 执行 seek 操作
+  try {
+    recording.seek(value, wrappedCallback);
+  } catch (error) {
+    console.error('Seek error:', error);
+    isProcessing.value = false;
+  }
+};
+
+/**
+ * 缩放比例增加
+ */
+const handleZoomIn = () => {
+  if (scale.value >= 2.0) {
+    return;
+  }
+  scale.value += 0.1;
+  display.scale(scale.value);
+};
+
+/**
+ * 缩放比例减少
+ */
+const handleZoomOut = () => {
+  if (scale.value <= 0.1) {
+    return;
+  }
+  scale.value -= 0.1;
+  display.scale(scale.value);
+};
+
+/**
+ * 缩放比例重置
+ */
+const handleZoomReset = () => {
+  scale.value = 1;
+  display.scale(scale.value);
 };
 
 onMounted(async () => {
+  // 修复 Guacamole Canvas 绘制问题的 monkey patch
+  const originalToCanvas = Guacamole.Layer.prototype.toCanvas;
+  Guacamole.Layer.prototype.toCanvas = function () {
+    // 检查当前层的尺寸
+    if (this.width === 0 || this.height === 0) {
+      console.warn('Layer has zero size in toCanvas, skipping drawImage');
+      // 返回一个空的 ImageData 或默认 Canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = 1;
+      canvas.height = 1;
+      return canvas;
+    }
+
+    // 检查 Canvas 元素是否存在且有效
+    const canvas = this.getCanvas();
+    if (!canvas || canvas.width === 0 || canvas.height === 0) {
+      console.warn('Canvas has zero size in toCanvas, creating fallback');
+      const fallbackCanvas = document.createElement('canvas');
+      fallbackCanvas.width = this.width || 1;
+      fallbackCanvas.height = this.height || 1;
+      return fallbackCanvas;
+    }
+
+    // 调用原始方法
+    try {
+      return originalToCanvas.call(this);
+    } catch (error) {
+      console.warn('Error in toCanvas, returning fallback:', error);
+      const fallbackCanvas = document.createElement('canvas');
+      fallbackCanvas.width = this.width || 1;
+      fallbackCanvas.height = this.height || 1;
+      return fallbackCanvas;
+    }
+  };
+
+  // 修复 drawImage 方法
+  const originalDrawImage = CanvasRenderingContext2D.prototype.drawImage;
+  CanvasRenderingContext2D.prototype.drawImage = function (
+    image: any,
+    sx?: any,
+    sy?: any,
+    sw?: any,
+    sh?: any,
+    dx?: any,
+    dy?: any,
+    dw?: any,
+    dh?: any
+  ) {
+    // 检查源图像是否有效
+    if (image instanceof HTMLCanvasElement && (image.width === 0 || image.height === 0)) {
+      console.warn('Attempting to draw canvas with zero size, skipping');
+      return;
+    }
+
+    // 调用原始方法
+    try {
+      return (originalDrawImage as any).apply(this, arguments);
+    } catch (error) {
+      console.warn('Error in drawImage, skipping:', error);
+      return;
+    }
+  };
+
+  // 添加全局错误处理
+  window.addEventListener('error', event => {
+    if (
+      event.error &&
+      event.error.message &&
+      event.error.message.includes("Failed to execute 'drawImage'")
+    ) {
+      console.warn('Caught drawImage error globally, attempting to fix display');
+
+      // 尝试修复 display
+      if (display && display.getDefaultLayer) {
+        const layer = display.getDefaultLayer();
+        if (layer && layer.resize) {
+          layer.resize(1024, 768);
+          if (scale.value > 0) {
+            display.scale(scale.value);
+          }
+        }
+      }
+
+      // 阻止错误继续传播
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  });
+
   tunnel = new Guacamole.StaticHTTPTunnel();
   recording = new Guacamole.SessionRecording(tunnel);
   display = recording.getDisplay();
+
+  // 定义事件处理器
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.ctrlKey || event.metaKey) {
+      switch (event.key) {
+        case '+':
+        case '=':
+          event.preventDefault();
+          handleZoomIn();
+          break;
+        case '-':
+          event.preventDefault();
+          handleZoomOut();
+          break;
+        case '0':
+          event.preventDefault();
+          handleZoomReset();
+          break;
+      }
+    }
+  };
+
+  const handleWheel = (event: WheelEvent) => {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+      if (event.deltaY < 0) {
+        handleZoomIn();
+      } else {
+        handleZoomOut();
+      }
+    }
+  };
+
+  // 添加事件监听器
+  document.addEventListener('keydown', handleKeyDown);
+
+  const guacamolePlayer = document.getElementById('guacamolePlayer');
+  if (guacamolePlayer) {
+    guacamolePlayer.addEventListener('wheel', handleWheel);
+  }
+
+  // 将事件处理器存储起来，以便在卸载时移除
+  (window as any).guacamoleKeyHandler = handleKeyDown;
+  (window as any).guacamoleWheelHandler = handleWheel;
 
   await loadResource(recording);
 });
 
 onBeforeUnmount(() => {
+  // 移除事件监听器
+  if ((window as any).guacamoleKeyHandler) {
+    document.removeEventListener('keydown', (window as any).guacamoleKeyHandler);
+  }
+
+  if ((window as any).guacamoleWheelHandler) {
+    const guacamolePlayer = document.getElementById('guacamolePlayer');
+    if (guacamolePlayer) {
+      guacamolePlayer.removeEventListener('wheel', (window as any).guacamoleWheelHandler);
+    }
+  }
+
   if (recording) {
     recording.pause();
-
     recording.disconnect();
 
     tunnel = null;
@@ -313,7 +646,13 @@ onBeforeUnmount(() => {
     chunks.value = '';
 
     const el = document.getElementById('guacamolePlayer') as HTMLElement;
-    el.removeChild(display.getElement());
+    if (el && display && display.getElement()) {
+      try {
+        el.removeChild(display.getElement());
+      } catch (error) {
+        console.log('Error removing display element:', error);
+      }
+    }
   }
 });
 
