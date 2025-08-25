@@ -318,7 +318,7 @@ setVideoInfoSetting();
   border: none;
   padding-left: 0;
   padding-right: 0;
-  margin: 10px 0;
+  margin: 10px 12px;
 
   :deep(.n-list) {
     padding-left: 0;
