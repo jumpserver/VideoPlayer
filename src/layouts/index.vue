@@ -1,34 +1,32 @@
 <template>
-  <n-flex class="!gap-col-0" h-screen>
+  <n-flex class="page-root">
     <Side />
-    <n-layout font="sans" h-screen class="w-[calc(100vw-65px)]">
-      <n-layout-header flex w-full h-55px header-base>
+    <n-layout class="page-main">
+      <n-layout-header class="page-header">
         <Header @back="handleBack" />
       </n-layout-header>
       <n-divider />
       <n-layout-content
-        w-full
-        main-bg-base
-        class="h-[calc(100%-56px)]"
-        content-style="overflow: hidden"
+        class="page-content"
+        content-style="overflow: hidden; height: calc(100vh - 56px);"
       >
-        <n-grid :cols="12" w-full style="height: calc(100vh - 60px)">
+        <n-grid :cols="12" class="page-grid">
           <n-gi :span="8">
-            <n-flex justify="center" align="center" style="height: 100%">
-              <Upload v-if="!showPlayer" @parser="handleParser" />
-              <template v-else>
-                <router-view :key="route.fullPath"></router-view>
-              </template>
-            </n-flex>
+            <div class="pane-left">
+              <Upload v-if="!showPlayer" @parser="handleParser" class="pane-fill" />
+
+              <router-view v-else :key="route.fullPath" class="pane-fill" />
+            </div>
           </n-gi>
           <n-gi :span="4">
-            <n-flex justify="center" align="center" style="height: 100%">
+            <div class="pane-right">
               <SliceList
                 @play="handlePlay"
                 :json-file="currentPartJsonFile"
                 @show-upload="handleShowUpload"
+                class="pane-fill"
               />
-            </n-flex>
+            </div>
           </n-gi>
         </n-grid>
       </n-layout-content>
@@ -161,8 +159,62 @@ const handleShowUpload = () => {
 </script>
 
 <style scoped lang="scss">
+.page-root {
+  gap: unset !important;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.page-main {
+  width: calc(100vw - 65px);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 55px;
+}
+
 :deep(.n-divider) {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
+  margin: 0 !important;
+}
+
+.page-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.page-grid {
+  width: 100%;
+  height: 100%;
+}
+
+.pane-left,
+.pane-right {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.pane-left {
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.pane-right {
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.pane-fill {
+  width: 100%;
+  height: 100%;
 }
 </style>

@@ -13,7 +13,7 @@
         transition-all
         duration-300
         cursor-pointer
-        :component="LanguageOutline"
+        :component="GlobeOutline"
         @click="handleChangeLanguage"
       />
 
@@ -38,7 +38,7 @@ import Logo from '@/assets/Logo.svg';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
 import { useSettingStore } from '@/store/modules/settingStroe.ts';
-import { SunnyOutline, MoonOutline, LanguageOutline } from '@vicons/ionicons5';
+import { SunnyOutline, MoonOutline, GlobeOutline } from '@vicons/ionicons5';
 
 const i18n = useI18n();
 const settingStore = useSettingStore();
