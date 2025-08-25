@@ -1,56 +1,49 @@
 <template>
-  <n-space
-    v-if="loadingBuffer"
-    justify="center"
-    align="center"
-    size="small"
-    w-full
-    h-full
-    pos-absolute
-    z-9999
-  >
-    <n-spin :show="loadingBuffer">
-      <template #description> {{ t('parsing') }} </template>
-    </n-spin>
-  </n-space>
-  <div id="guacamolePlayer" w-full style="height: 90%"></div>
-  <n-flex align="center" :wrap="false" w-full px-10px style="height: 10%">
-    <n-flex :wrap="false" w-160px align="center">
-      <n-button
-        v-if="!isPlaying"
-        :disabled="isProcessing"
-        text
-        cursor-pointer
-        @click="handleVideoPlay"
-      >
-        <n-icon :component="PlayCircleOutline" size="30" text-base />
-      </n-button>
-      <n-button v-else :disabled="isProcessing" text cursor-pointer @click="handleVideoPlay">
-        <n-icon :component="StopCircleOutline" size="30" text-base />
-      </n-button>
-      <n-text text-base> {{ currentPosition }} / {{ totalDuration }} </n-text>
-    </n-flex>
-    <n-slider
-      v-model:value="currentPercent"
-      :max="max"
-      :disabled="isProcessing"
-      :format-tooltip="formatTooltip"
-      @update:value="handleSliderChange"
-    />
-    <n-flex :wrap="false" w-200px align="center" justify="end">
-      <n-button-group>
-        <n-button size="small" @click="handleZoomOut" :disabled="scale <= 0.1">
-          <n-icon :component="RemoveOutline" size="16" />
+  <div class="gua-player-root">
+    <n-space v-if="loadingBuffer" justify="center" align="center" size="small" class="loading-mask">
+      <n-spin :show="loadingBuffer">
+        <template #description>{{ t('parsing') }}</template>
+      </n-spin>
+    </n-space>
+
+    <div id="guacamolePlayer" class="player-area"></div>
+
+    <div class="controls">
+      <div class="controls-left">
+        <n-button v-if="!isPlaying" :disabled="isProcessing" text @click="handleVideoPlay">
+          <n-icon :component="PlayCircleOutline" size="30" />
         </n-button>
-        <n-button size="small" @click="handleZoomReset">
-          <n-text style="font-size: 12px">{{ Math.round(scale * 100) }}%</n-text>
+        <n-button v-else :disabled="isProcessing" text @click="handleVideoPlay">
+          <n-icon :component="StopCircleOutline" size="30" />
         </n-button>
-        <n-button size="small" @click="handleZoomIn" :disabled="scale >= 2.0">
-          <n-icon :component="AddOutline" size="16" />
-        </n-button>
-      </n-button-group>
-    </n-flex>
-  </n-flex>
+        <n-text class="time-text">{{ currentPosition }} / {{ totalDuration }}</n-text>
+      </div>
+
+      <div class="controls-slider">
+        <n-slider
+          v-model:value="currentPercent"
+          :max="max"
+          :disabled="isProcessing"
+          :format-tooltip="formatTooltip"
+          @update:value="handleSliderChange"
+        />
+      </div>
+
+      <div class="controls-right">
+        <n-button-group>
+          <n-button size="small" @click="handleZoomOut" :disabled="scale <= 0.1">
+            <n-icon :component="RemoveOutline" size="16" />
+          </n-button>
+          <n-button size="small" @click="handleZoomReset">
+            <n-text class="scale-text">{{ Math.round(scale * 100) }}%</n-text>
+          </n-button>
+          <n-button size="small" @click="handleZoomIn" :disabled="scale >= 2.0">
+            <n-icon :component="AddOutline" size="16" />
+          </n-button>
+        </n-button-group>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -198,9 +191,7 @@ const initRecordingEvent = (record, el: HTMLElement) => {
       max.value = record.getDuration();
       totalDuration.value = formatTime(record.getDuration());
     }, 100);
-
-  })
-
+  });
 
   const parentEl = el.parentElement as HTMLElement;
 
@@ -663,3 +654,74 @@ onUnmounted(() => {
   isPlaying.value = false;
 });
 </script>
+
+<style scoped lang="scss">
+.gua-player-root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+.loading-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+.player-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.controls-left {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 180px;
+}
+
+.time-text {
+  font-size: 14px;
+}
+
+.controls-slider {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.controls-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 200px;
+}
+
+.scale-text {
+  font-size: 12px;
+}
+
+:deep(.n-slider) {
+  width: 100%;
+}
+
+:deep(.n-slider-rail) {
+  margin: 0;
+}
+</style>
