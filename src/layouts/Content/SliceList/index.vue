@@ -2,72 +2,76 @@
   <n-tabs animated size="medium" type="bar" h-full p-10px right-side>
     <n-tab-pane name="playlists" :tab="t('playlists')">
       <n-empty v-if="videoList.length === 0" :description="t('emptyList')" />
-      <n-flex vertical v-else min-w="340px">
-        <n-list bordered whitespace-nowrap>
-          <n-list-item>
-            <n-thing :title="t('videoInformation')">
-              <n-h6 v-for="item of videoInfoSetting" :key="item.label">
-                <n-popover trigger="hover">
-                  <template #trigger>
-                    <n-tag
-                      round
-                      size="small"
-                      type="info"
-                      max-w="315px"
-                      cursor-pointer
-                      :bordered="false"
-                    >
-                      {{ item.label }} : {{ item.message }}
-                      <template #icon>
-                        <n-icon :component="item.iconName" />
-                      </template>
-                    </n-tag>
-                  </template>
-                  {{ item.message }}
-                </n-popover>
-              </n-h6>
-            </n-thing>
-          </n-list-item>
-        </n-list>
 
-        <n-list bordered hoverable clickable>
+      <div v-else class="sidebar">
+        <!-- 信息卡片 -->
+        <n-card class="info-card" :segmented="{ content: true }" size="small" :bordered="true">
           <template #header>
-            {{ t('videoSelection') }} {{ `( ${currentIndex} / ${videoList.length})` }}
+            <div class="card-header">
+              <span class="title">{{ t('videoInformation') }}</span>
+            </div>
           </template>
-          <n-scrollbar style="max-height: 350px">
-            <n-list-item
-              v-for="(list, index) of videoList"
-              :key="list.name"
-              @click.prevent="handlePlayVideo(list)"
+
+          <div class="info-grid">
+            <n-popover
+              v-for="item in videoInfoSetting"
+              :key="item.key"
+              trigger="hover"
+              placement="top-start"
             >
-              <n-popover trigger="hover">
-                <template #trigger>
-                  {{ `Part ${index + 1}` }}
-                </template>
-                {{ list.name }}
-              </n-popover>
-              <template #suffix>
-                <n-flex h-full p-5px justify="center" align="center">
-                  <n-button
-                    text
-                    @click="
-                      (e: Event) => {
-                        handleClose(e, list);
-                      }
-                    "
-                  >
-                    <n-icon size="14" :component="Close" text-base />
-                  </n-button>
-                </n-flex>
+              <template #trigger>
+                <div class="info-chip" :class="{ 'is-empty': !item.message }">
+                  <n-icon class="chip-icon" :component="item.iconName" />
+                  <span class="chip-label">{{ item.label }}</span>
+                  <span class="chip-sep">:</span>
+                  <span class="chip-text" :title="item.message || '-'">{{
+                    item.message || '-'
+                  }}</span>
+                </div>
               </template>
-            </n-list-item>
+              {{ item.message || '-' }}
+            </n-popover>
+          </div>
+        </n-card>
+
+        <!-- 播放列表示例 -->
+        <n-card class="list-card" size="small" :bordered="true">
+          <template #header>
+            <div class="card-header sticky">
+              <span class="title">
+                {{ t('videoSelection') }}
+              </span>
+              <n-tag size="small" type="success" round :bordered="false" class="count-tag">
+                {{ `${currentIndex} / ${videoList.length}` }}
+              </n-tag>
+            </div>
+          </template>
+
+          <n-scrollbar class="list-scroll">
+            <n-list bordered clickable hoverable class="playlist">
+              <n-list-item
+                v-for="(list, index) of videoList"
+                :key="list.name"
+                class="playlist-item"
+                :class="{ active: index + 1 === currentIndex }"
+                @click.prevent="handlePlayVideo(list)"
+              >
+                <div class="item-main">
+                  <span class="item-title">Part {{ index + 1 }}</span>
+                  <span class="item-sub" :title="list.name">{{ list.name }}</span>
+                </div>
+
+                <template #suffix>
+                  <n-button text class="item-close" @click.stop="e => handleClose(e, list)">
+                    <n-icon size="16" :component="Close" />
+                  </n-button>
+                </template>
+              </n-list-item>
+            </n-list>
           </n-scrollbar>
-        </n-list>
-      </n-flex>
+        </n-card>
+      </div>
     </n-tab-pane>
-    <!--    <n-tab-pane name="commandsList" :tab="t('commandsList')">-->
-    <!--      <n-empty :description="t('emptyCommand')" />-->
-    <!--    </n-tab-pane>-->
   </n-tabs>
 </template>
 
@@ -228,8 +232,149 @@ setVideoInfoSetting();
 </script>
 
 <style lang="scss" scoped>
-:deep(.n-list-item__divider) {
-  display: none;
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 340px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .title {
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+  &.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+}
+
+.info-card {
+  border-radius: 14px;
+  :deep(.n-card__content) {
+    padding-top: 10px;
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 10px;
+}
+
+.info-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+  &.is-empty {
+    opacity: 0.7;
+  }
+  .chip-icon {
+    opacity: 0.9;
+  }
+  .chip-label {
+    font-weight: 600;
+    opacity: 0.9;
+  }
+  .chip-sep {
+    opacity: 0.5;
+  }
+  .chip-text {
+    opacity: 0.95;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.list-card {
+  border-radius: 14px;
+  :deep(.n-card__content) {
+    padding-inline: 0;
+  }
+  .count-tag {
+    margin-left: 8px;
+  }
+}
+
+.list-scroll {
+  max-height: 40vh;
+}
+
+.playlist {
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+  margin: 10px 0;
+
+  :deep(.n-list) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  :deep(.n-list-item__divider) {
+    display: none;
+  }
+}
+
+.playlist-item {
+  padding: 8px 10px;
+  margin: 6px 0;
+  border-radius: 10px;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    .item-close {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  &.active {
+    background: rgba(64, 158, 255, 0.14);
+    border-color: rgba(64, 158, 255, 0.35);
+  }
+  .item-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .item-title {
+    font-weight: 600;
+    line-height: 1.15;
+  }
+  .item-sub {
+    font-size: 12px;
+    opacity: 0.75;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .item-close {
+    opacity: 0;
+    transform: translateX(4px);
+    transition:
+      opacity 0.15s,
+      transform 0.15s;
+  }
 }
 
 :deep(.n-tabs-pane-wrapper) {
