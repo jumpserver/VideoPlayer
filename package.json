@@ -88,7 +88,6 @@
   },
   "devDependencies": {
     "@electron/notarize": "^2.5.0",
-    "@types/electron": "^1.6.10",
     "@types/node": "^22.5.1",
     "@unocss/preset-web-fonts": "^0.62.3",
     "@vicons/antd": "^0.12.0",

@@ -14,4 +14,5 @@ export default {
   emptyCommand: '命令列表为空',
   videoInformation: '视频信息：',
   toggleLangSuccess: '语言已更改',
+  scalingRatio: '缩放比',
 };

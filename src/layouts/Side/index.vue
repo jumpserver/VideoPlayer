@@ -1,5 +1,5 @@
 <template>
-  <div w-65px flex flex-col items-center justify-between h-full side-bg-base>
+  <div flex flex-col items-center justify-between h-screen side-bg-base w-65px>
     <n-flex mt-10px>
       <n-image :src="Logo" :height="34" :width="34" :preview-disabled="true" cursor-pointer />
     </n-flex>
