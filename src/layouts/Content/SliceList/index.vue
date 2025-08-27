@@ -274,11 +274,17 @@ setVideoInfoSetting();
   max-width: 100%;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(156, 163, 175, 0.1);
+  border: 1px solid rgba(156, 163, 175, 0.15);
   transition:
     background 0.2s,
     border-color 0.2s;
+
+  :global(.dark) & {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
   &.is-empty {
     opacity: 0.7;
   }
@@ -336,19 +342,33 @@ setVideoInfoSetting();
   transition:
     background 0.15s,
     border-color 0.15s;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(156, 163, 175, 0.15);
   border-radius: 10px;
 
+  :global(.dark) & {
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+
   &:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(156, 163, 175, 0.08);
+
+    :global(.dark) & {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
     .item-close {
       opacity: 1;
       transform: translateX(0);
     }
   }
   &.active {
-    background: rgba(64, 158, 255, 0.14);
-    border-color: rgba(64, 158, 255, 0.35);
+    background: rgba(64, 158, 255, 0.12);
+    border-color: rgba(64, 158, 255, 0.3);
+
+    :global(.dark) & {
+      background: rgba(64, 158, 255, 0.14);
+      border-color: rgba(64, 158, 255, 0.35);
+    }
   }
   .item-main {
     display: flex;

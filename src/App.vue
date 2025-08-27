@@ -1,5 +1,9 @@
 <template>
-  <n-config-provider :theme-overrides="overrides[theme]" :theme="darkTheme" :class="theme">
+  <n-config-provider
+    :theme-overrides="overrides[theme]"
+    :theme="theme === 'dark' ? darkTheme : null"
+    :class="theme"
+  >
     <n-message-provider>
       <router-view />
     </n-message-provider>

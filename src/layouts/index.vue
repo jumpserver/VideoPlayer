@@ -1,29 +1,30 @@
 <template>
-  <n-flex class="!gap-0 !flex-nowrap">
+  <n-flex class="!gap-0 !flex-nowrap main-bg-base">
     <Side />
 
-    <n-layout class="flex flex-col">
-      <n-layout-header class="flex items-center w-full h-14">
+    <n-layout class="flex flex-col main-bg-base">
+      <n-layout-header class="flex items-center w-full h-14 header-base">
         <Header @back="handleBack" />
       </n-layout-header>
 
-      <n-divider class="!m-0" />
+      <n-divider class="!m-0 divider-base" />
 
       <n-layout
         has-sider
-        :content-style="{ gap: '24px', height: 'calc(100vh - 4rem)' }"
+        :content-style="{ gap: '24px', height: 'calc(100vh - 3.6rem)' }"
         sider-placement="right"
-        class="w-full"
+        class="w-full main-bg-base"
       >
         <n-layout-content
           :content-style="{
             display: 'flex',
             padding: '0 12px 0 20px'
           }"
+          class="main-bg-base"
         >
           <Upload v-if="!showPlayer" @parser="handleParser" />
 
-          <div v-else ref="playerWrapRef" class="w-full h-full">
+          <div v-else ref="playerWrapRef" class="w-full h-full main-bg-base">
             <router-view :key="route.fullPath" />
           </div>
         </n-layout-content>
@@ -37,6 +38,7 @@
           collapse-mode="width"
           v-model:collapsed="siderCollapsed"
           content-style="padding: 24px;"
+          class="right-side"
         >
           <SliceList
             @play="handlePlay"
