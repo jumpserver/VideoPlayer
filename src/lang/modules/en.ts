@@ -14,4 +14,5 @@ export default {
   emptyCommand: 'The command list is empty',
   videoInformation: 'Video Information: ',
   toggleLangSuccess: 'Language changed',
+  scalingRatio: 'Scaling Ratio'
 };

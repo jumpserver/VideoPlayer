@@ -4,10 +4,7 @@
     flex-col
     items-center
     justify-center
-    p-10px
-    multiple
     directory-dnd
-    style="height: calc(100% - 20px)"
     :max="1"
     :custom-request="handleCustomRequest"
     :trigger-style="{ width: '100%', height: '85%' }"

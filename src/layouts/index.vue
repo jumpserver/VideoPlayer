@@ -1,35 +1,50 @@
 <template>
-  <n-flex class="page-root">
+  <n-flex class="!gap-0 !flex-nowrap">
     <Side />
-    <n-layout class="page-main">
-      <n-layout-header class="page-header">
+
+    <n-layout class="flex flex-col">
+      <n-layout-header class="flex items-center w-full h-14">
         <Header @back="handleBack" />
       </n-layout-header>
-      <n-divider />
-      <n-layout-content
-        class="page-content"
-        content-style="overflow: hidden; height: calc(100vh - 56px);"
-      >
-        <n-grid :cols="12" class="page-grid">
-          <n-gi :span="8">
-            <div class="pane-left">
-              <Upload v-if="!showPlayer" @parser="handleParser" class="pane-fill" />
 
-              <router-view v-else :key="route.fullPath" class="pane-fill" />
-            </div>
-          </n-gi>
-          <n-gi :span="4">
-            <div class="pane-right">
-              <SliceList
-                @play="handlePlay"
-                :json-file="currentPartJsonFile"
-                @show-upload="handleShowUpload"
-                class="pane-fill"
-              />
-            </div>
-          </n-gi>
-        </n-grid>
-      </n-layout-content>
+      <n-divider class="!m-0" />
+
+      <n-layout
+        has-sider
+        :content-style="{ gap: '24px', height: 'calc(100vh - 4rem)' }"
+        sider-placement="right"
+        class="w-full"
+      >
+        <n-layout-content
+          :content-style="{
+            display: 'flex',
+            padding: '0 12px 0 20px'
+          }"
+        >
+          <Upload v-if="!showPlayer" @parser="handleParser" />
+
+          <div v-else ref="playerWrapRef" class="w-full h-full">
+            <router-view :key="route.fullPath" />
+          </div>
+        </n-layout-content>
+
+        <n-layout-sider
+          bordered
+          :collapsed-width="0"
+          :width="480"
+          :native-scrollbar="false"
+          show-trigger="bar"
+          collapse-mode="width"
+          v-model:collapsed="siderCollapsed"
+          content-style="padding: 24px;"
+        >
+          <SliceList
+            @play="handlePlay"
+            :json-file="currentPartJsonFile"
+            @show-upload="handleShowUpload"
+          />
+        </n-layout-sider>
+      </n-layout>
     </n-layout>
   </n-flex>
 </template>
@@ -40,16 +55,20 @@ import Header from '@/layouts/Header/index.vue';
 import Upload from './Content/Upload/index.vue';
 import SliceList from './Content/SliceList/index.vue';
 
-import { ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
 import { useMessage } from 'naive-ui';
-import { useResolveFile } from '@/hooks/useResolveFile.ts';
 import type { UploadFileInfo } from 'naive-ui';
+import { useRouter, useRoute } from 'vue-router';
+import { useResolveFile } from '@/hooks/useResolveFile.ts';
+import { useResizeObserver, useDebounceFn } from '@vueuse/core';
+import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 
 const route = useRoute();
 const router = useRouter();
 const message = useMessage();
 const { fileParser } = useResolveFile();
+
+const siderCollapsed = ref(false);
+const playerWrapRef = ref<HTMLElement | null>(null);
 
 const jsonFile = ref<string>('');
 const videoUrl = ref<string>('');
@@ -57,7 +76,7 @@ const showPlayer = ref<boolean>(false);
 const currentPartJsonFile = ref({});
 
 /**
- * 处理返回时间
+ * 返回：关闭播放器回到上传
  */
 const handleBack = () => {
   showPlayer.value = false;
@@ -87,61 +106,36 @@ const handleParser = async (options: {
 
 /**
  * 点击 Item 开始播放
- *
- * @param videoUrl
- * @param type
- * @param jsonFile
  */
 const handlePlay = (videoUrl: string, type: string, jsonFile: object) => {
   switch (type) {
     case 'mp4': {
       showPlayer.value = true;
       currentPartJsonFile.value = jsonFile;
-
-      router.push({
-        name: 'mp4Player',
-        params: { videoUrl }
-      });
-
+      router.push({ name: 'mp4Player', params: { videoUrl } });
       break;
     }
     case 'cast': {
       showPlayer.value = true;
       currentPartJsonFile.value = jsonFile;
-      router.push({
-        name: 'asciicastPlayer',
-        params: { castUrl: videoUrl }
-      });
-
+      router.push({ name: 'asciicastPlayer', params: { castUrl: videoUrl } });
       break;
     }
     case 'gua': {
       showPlayer.value = true;
-      router.push({
-        name: 'guaPlayer',
-        params: { guaUrl: videoUrl }
-      });
-
+      router.push({ name: 'guaPlayer', params: { guaUrl: videoUrl } });
       break;
     }
     case 'part': {
       showPlayer.value = true;
-
       currentPartJsonFile.value = jsonFile;
-
       setTimeout(() => {
-        router.push({
-          name: 'guaPlayer',
-          params: { guaUrl: videoUrl }
-        });
+        router.push({ name: 'guaPlayer', params: { guaUrl: videoUrl } });
       });
-
       break;
     }
-
     default: {
       showPlayer.value = false;
-
       break;
     }
   }
@@ -156,65 +150,38 @@ const handleShowUpload = () => {
     currentPartJsonFile.value = {};
   }, 100);
 };
+
+const triggerRecomputeScale = () => {
+  window.dispatchEvent(new CustomEvent('recompute-scale', { detail: Date.now() }));
+};
+
+const debouncedTrigger = useDebounceFn(triggerRecomputeScale, 80);
+
+useResizeObserver(playerWrapRef as any, () => {
+  debouncedTrigger();
+});
+
+watch(siderCollapsed, async () => {
+  await nextTick();
+
+  // 立即触发一次
+  triggerRecomputeScale();
+
+  // 在动画期间多次触发，确保各个阶段都能自适应
+  const delays = [50, 150, 250, 400, 600];
+  delays.forEach(delay => {
+    setTimeout(triggerRecomputeScale, delay);
+  });
+});
+
+onMounted(() => {
+  window.addEventListener('resize', debouncedTrigger);
+  if (showPlayer.value) {
+    setTimeout(triggerRecomputeScale, 200);
+  }
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', debouncedTrigger);
+});
 </script>
-
-<style scoped lang="scss">
-.page-root {
-  gap: unset !important;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.page-main {
-  width: calc(100vw - 65px);
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.page-header {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 55px;
-}
-
-:deep(.n-divider) {
-  margin: 0 !important;
-}
-
-.page-content {
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-}
-
-.page-grid {
-  width: 100%;
-  height: 100%;
-}
-
-.pane-left,
-.pane-right {
-  height: 100%;
-  width: 100%;
-  display: flex;
-}
-
-.pane-left {
-  align-items: stretch;
-  justify-content: stretch;
-}
-
-.pane-right {
-  align-items: stretch;
-  justify-content: stretch;
-}
-
-.pane-fill {
-  width: 100%;
-  height: 100%;
-}
-</style>
