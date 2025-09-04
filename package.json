@@ -99,7 +99,7 @@
     "@vicons/material": "^0.12.0",
     "@vicons/tabler": "^0.12.0",
     "@vitejs/plugin-vue": "^5.1.2",
-    "electron": "^32.0.1",
+    "electron": "^35.7.5",
     "electron-builder": "^24.13.3",
     "eslint": "^9.9.1",
     "naive-ui": "^2.41.0",
