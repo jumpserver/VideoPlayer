@@ -109,7 +109,7 @@
     "unocss": "^0.62.3",
     "unplugin-auto-import": "^0.18.2",
     "unplugin-vue-components": "^0.27.4",
-    "vite": "^6.0.0",
+    "vite": "^6.3.6",
     "vite-plugin-electron": "^0.28.7",
     "vite-plugin-electron-renderer": "^0.14.6",
     "vue-tsc": "^2.0.29"
