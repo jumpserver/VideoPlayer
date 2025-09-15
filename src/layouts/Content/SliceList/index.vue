@@ -13,12 +13,7 @@
           </template>
 
           <div class="info-grid">
-            <n-popover
-              v-for="item in videoInfoSetting"
-              :key="item.key"
-              trigger="hover"
-              placement="top-start"
-            >
+            <n-popover v-for="item in videoInfoSetting" :key="item.key" trigger="hover">
               <template #trigger>
                 <div class="info-chip" :class="{ 'is-empty': !item.message }">
                   <n-icon class="chip-icon" :component="item.iconName" />
@@ -270,12 +265,14 @@ setVideoInfoSetting();
 .info-chip {
   display: inline-flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 6px;
   max-width: 100%;
   padding: 6px 10px;
   border-radius: 999px;
   background: rgba(156, 163, 175, 0.1);
   border: 1px solid rgba(156, 163, 175, 0.15);
+  cursor: pointer;
   transition:
     background 0.2s,
     border-color 0.2s;
@@ -292,6 +289,7 @@ setVideoInfoSetting();
     opacity: 0.9;
   }
   .chip-label {
+    word-break: keep-all;
     font-weight: 600;
     opacity: 0.9;
   }
