@@ -907,19 +907,12 @@
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-0.7.34.tgz#10964ba0dee6ac4cd462e2795b6bebd407303433"
   integrity sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==
 
-"@types/node@*", "@types/node@^22.5.1":
-  version "22.7.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.7.5.tgz#cfde981727a7ab3611a481510b473ae54442b92b"
-  integrity sha512-jML7s2NAzMWc//QSJ1a3prpk78cOPchGvXJsC3C6R6PSMoooztvRVQEz89gmBTBY1SPMaqo5teB4uNHPdetShQ==
+"@types/node@*", "@types/node@^22.5.1", "@types/node@^22.7.7":
+  version "22.18.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.18.3.tgz#e1a4eb680a688141cdd369c5a035f48cf8ece9e3"
+  integrity sha512-gTVM8js2twdtqM+AE2PdGEe9zGQY4UvmFjan9rZcVb6FGdStfjWoWejdmy4CfWVO9rh5MiYQGZloKAGkJt8lMw==
   dependencies:
-    undici-types "~6.19.2"
-
-"@types/node@^20.9.0":
-  version "20.16.11"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.16.11.tgz#9b544c3e716b1577ac12e70f9145193f32750b33"
-  integrity sha512-y+cTCACu92FyA5fgQSAI8A1H429g7aSK2HsO7K4XYUWc4dY5IUz55JSDIYT6/VsOLfGy8vmvQYC2hfb0iF16Uw==
-  dependencies:
-    undici-types "~6.19.2"
+    undici-types "~6.21.0"
 
 "@types/plist@^3.0.1":
   version "3.0.5"
@@ -2105,13 +2098,13 @@ electron-publish@24.13.1:
     lazy-val "^1.0.5"
     mime "^2.5.2"
 
-electron@^32.0.1:
-  version "32.2.0"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-32.2.0.tgz#40b17864be5f88c89f71045ac6f61b5d4a9c1919"
-  integrity sha512-Xy82QBQrEiQysoxsv6lnhHAcWNNe6vV6QqH3OPFXhEj/T9oAsBHEhZuuYHINSSsUE7zRSj+J9sNwJYOjisT0Vw==
+electron@^35.7.5:
+  version "35.7.5"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-35.7.5.tgz#294a4aebb2ad2a884de730c410f2358d061e8d53"
+  integrity sha512-dnL+JvLraKZl7iusXTVTGYs10TKfzUi30uEDTqsmTm0guN9V2tbOjTzyIZbh9n3ygUjgEYyo+igAwMRXIi3IPw==
   dependencies:
     "@electron/get" "^2.0.0"
-    "@types/node" "^20.9.0"
+    "@types/node" "^22.7.7"
     extract-zip "^2.0.1"
 
 emoji-regex@^8.0.0:
@@ -3948,10 +3941,10 @@ unconfig@^0.5.5:
     defu "^6.1.4"
     importx "^0.4.3"
 
-undici-types@~6.19.2:
-  version "6.19.8"
-  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.19.8.tgz#35111c9d1437ab83a7cdc0abae2f26d88eda0a02"
-  integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
+undici-types@~6.21.0:
+  version "6.21.0"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.21.0.tgz#691d00af3909be93a7faa13be61b3a5b50ef12cb"
+  integrity sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==
 
 unimport@^3.12.0:
   version "3.13.1"
