@@ -94,9 +94,18 @@ const handleFileOnLoad = (
     let jsonFile: Record<string, unknown> | null = null;
 
     const bufferData: ArrayBuffer = e.target.result as ArrayBuffer;
-    // 注意：第二个 'binary' 参数是无效的，这里要去掉
-    const uint8Array = new Uint8Array(bufferData);
     const regExp = /\.(json|replay|cast|part)(\.mp4|\.json|\.gz)?$/;
+
+    /**
+     * MP4 类型: 
+     *    处理: 直接以 Blob → ObjectURL 作为 videoUrl
+     *    补充: ArrayBuffer 是原始二进制内存, Uint8Array 是 读取/写入这块内存的视图
+     * 
+     * gz tar 类型:
+     *    - .replay.gz 为 Gua 产生的录像,需要写入本地磁盘.同时也会存在 .replay.mp4 形式
+     *    - .cast.gz 为字符协议的录像,直接将 ArrayBuffer 转为 ObjectURL
+     *    - .part.gz 为 Gua 的分片录像,也需要直接写入磁盘
+     */
 
     /** -------------------- 处理 .tar -------------------- */
     if (fileName.includes('.tar')) {
@@ -107,6 +116,9 @@ const handleFileOnLoad = (
           const match = extractedFile.name.match(regExp);
           const partJson: string = match?.[0] ?? '';
           const decompressFileName: string = match?.[1] ?? '';
+
+          // .part 是 rdp 的分片形式
+          // .cast 是 字符协议的
 
           // part 的 JSON：xxx.replay.json
           if (partJson === '.replay.json') {
@@ -178,7 +190,6 @@ const handleFileOnLoad = (
               break;
             }
             default:
-              // 其他文件跳过
               break;
           }
         }
@@ -209,8 +220,10 @@ const handleFileOnLoad = (
       switch (processName) {
         case 'replay': {
           const isGua = fileName.split('.')[2] === 'gz';
+
           if (isGua) {
             type = 'gua';
+          
             try {
               const res = await handleGuaData(
                 e.currentTarget?.result as ArrayBuffer,
@@ -275,8 +288,14 @@ const handleFileOnLoad = (
     /** -------------------- 处理 .mp4 -------------------- */
     if (fileName.includes('.mp4')) {
       type = 'mp4';
+
+      /**
+       * 完全没必要下面这种写法,可以直接替换为 const videoBlob = new Blob([e.currentTarget.result], { type: "video/mp4" });
+       * new Blob 本身就可以接收 ArrayBuffer 类型 ArrayBufferView 类型 等,而 Uint8Array 类型本身就归属于 ArrayBufferView
+       */
       const videoBuffer: Uint8Array = new Uint8Array(e.currentTarget?.result as ArrayBuffer);
       const videoBlob: Blob = new Blob([videoBuffer], { type: 'video/mp4' });
+
       videoUrl = URL.createObjectURL(videoBlob);
 
       fileStore.setVideoList({
@@ -312,6 +331,7 @@ const fileParser = (fileInfo: UploadFileInfo, eventOptions: IFileParser): Promis
 
     fileReader.readAsArrayBuffer(file);
 
+    // 读取过程
     fileReader.onprogress = (e: ProgressEvent<FileReader>) => {
       if (e.lengthComputable) {
         const percentComplete = Math.round((e.loaded / e.total) * 100);
@@ -319,6 +339,7 @@ const fileParser = (fileInfo: UploadFileInfo, eventOptions: IFileParser): Promis
       }
     };
 
+    // 读取成功
     fileReader.onload = async (e: ProgressEvent<FileReader>) => {
       try {
         const res = await handleFileOnLoad(e, fileName, eventOptions);
@@ -332,6 +353,7 @@ const fileParser = (fileInfo: UploadFileInfo, eventOptions: IFileParser): Promis
       }
     };
 
+    // 读取失败
     fileReader.onerror = () => {
       eventOptions.onError();
       notification.error({

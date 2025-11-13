@@ -66,7 +66,7 @@ const playerAreaRef = ref<HTMLElement | null>(null);
 const scale = ref(0);
 const max = ref(100);
 const currentPercent = ref(0);
-const chunks = ref('');
+let chunksArr: string[] = [];
 const totalDuration = ref('00:00');
 const currentPosition = ref('00:00');
 const isPlaying = ref(false);
@@ -74,6 +74,13 @@ const isProcessing = ref(false);
 const loadingBuffer = ref(false);
 const fileDataEndCalled = ref(false);
 
+/**
+ * @description 计算缩放比
+ * 
+ * 核心: 
+ *    哪个方向比例更小，就由哪个方向限制缩放，避免该方向溢出；另一方向会留出空白.如果容器更“扁宽”，则宽度限制比例（scaleX 更小）；如果更“瘦高”，则高度限制比例（scaleY 更小）
+ *    设原始画布尺寸为 (W, H)，容器尺寸为 (Cw, Ch)，统一缩放比例为 s. 约束就是 缩放后尺寸不超过容器 s * W <= Cw; s * H <= Ch 因此 s <= Cw / W 且 s <= Ch / H
+ */
 const recomputeScale = () => {
   if (!display || !display.getDefaultLayer) return;
 
@@ -134,11 +141,12 @@ const loadResource = async (record: any) => {
   el.appendChild(displayElement);
 
   await window.electron.readFile(guaUrl.value);
-  chunks.value = '';
+  chunksArr.length = 0;
 
   window.electron.onFileDataChunk(chunk => {
     try {
-      chunks.value += chunk.trim();
+      // 不进行 trim，避免破坏协议文本边界
+      chunksArr.push(chunk);
     } catch (e) {
       console.log(e);
     }
@@ -146,7 +154,7 @@ const loadResource = async (record: any) => {
 
   window.electron.onFileDataEnd(() => {
     if (fileDataEndCalled.value) {
-      chunks.value = '';
+      chunksArr.length = 0;
       return;
     }
     fileDataEndCalled.value = true;
@@ -164,8 +172,9 @@ const loadResource = async (record: any) => {
       }
     }
 
-    record.connect(chunks.value);
-    chunks.value = '';
+    const data = chunksArr.join('');
+    record.connect(data);
+    chunksArr.length = 0;
     initRecordingEvent(record);
   });
 
@@ -453,7 +462,7 @@ onBeforeUnmount(() => {
     tunnel = null;
     recording = null;
     display = null;
-    chunks.value = '';
+    chunksArr.length = 0;
   }
 
   delete (window as any).guacamoleKeyHandler;
@@ -461,7 +470,7 @@ onBeforeUnmount(() => {
 });
 
 onUnmounted(() => {
-  chunks.value = '';
+  chunksArr.length = 0;
   currentPercent.value = 0;
   currentPosition.value = '00:00';
   isPlaying.value = false;
