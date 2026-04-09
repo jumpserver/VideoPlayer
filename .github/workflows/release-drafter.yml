@@ -54,6 +54,6 @@ jobs:
         with:
           tag_name: ${{ steps.get_version.outputs.TAG }}
           files: |
-            release/**
+            release/JumpServerVideoPlayer**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
