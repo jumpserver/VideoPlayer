@@ -13,6 +13,7 @@ dist-electron
 dist-ssr
 release
 *.local
+.yarn/*
 
 # Editor directories and files
 .vscode/*
