@@ -6,7 +6,7 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && electron-builder --linux --mac --win",
+    "build": "vite build && electron-builder --mac --win",
     "build:mac": "vite build && electron-builder --mac",
     "preview": "vite preview"
   },
@@ -42,7 +42,7 @@
     "mac": {
       "icon": "assets/player.icns",
       "target": {
-        "target": "default",
+        "target": "dmg",
         "arch": [
           "arm64",
           "x64"

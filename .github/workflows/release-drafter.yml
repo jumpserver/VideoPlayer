@@ -31,6 +31,15 @@ jobs:
           version: ${{ steps.get_version.outputs.TAG }}
           tag: ${{ steps.get_version.outputs.TAG }}
 
+      - name: Sync package version with tag
+        run: |
+          export VERSION="${TAG#v}"
+          sed -E -i.bak "s/\"version\": \"[^\"]+\"/\"version\": \"${VERSION}\"/" package.json
+          rm -f package.json.bak
+          rg -n '"version":' package.json
+        env:
+          TAG: ${{ steps.get_version.outputs.TAG }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -54,6 +63,7 @@ jobs:
         with:
           tag_name: ${{ steps.get_version.outputs.TAG }}
           files: |
-            release/VideoPlayer**
+            release/*.dmg
+            release/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
