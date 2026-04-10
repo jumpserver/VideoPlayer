@@ -36,7 +36,7 @@ jobs:
           export VERSION="${TAG#v}"
           sed -E -i.bak "s/\"version\": \"[^\"]+\"/\"version\": \"${VERSION}\"/" package.json
           rm -f package.json.bak
-          rg -n '"version":' package.json
+          node -e "const pkg=require('./package.json'); console.log('package.json version:', pkg.version)"
         env:
           TAG: ${{ steps.get_version.outputs.TAG }}
 
