@@ -10,7 +10,7 @@ import { BrowserWindow } from 'electron';
 export const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const CHUNK_SIZE = 64 * 1024;
-let window: any;
+let window: BrowserWindow | null = null;
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 
@@ -49,7 +49,15 @@ const applyAppIcon = () => {
   return icon;
 };
 
-const createWindow = () => {
+const createWindow = async () => {
+  if (!app.isReady()) {
+    await app.whenReady();
+  }
+
+  if (window && !window.isDestroyed()) {
+    return window;
+  }
+
   const appIcon = applyAppIcon();
 
   window = new BrowserWindow({
@@ -73,6 +81,10 @@ const createWindow = () => {
     icon: appIcon
   });
 
+  window.on('closed', () => {
+    window = null;
+  });
+
   const serveUrl = process.env.VITE_DEV_SERVER_URL;
 
   if (app.isPackaged) {
@@ -85,6 +97,8 @@ const createWindow = () => {
     });
     window.webContents.openDevTools();
   }
+
+  return window;
 };
 
 app.whenReady().then(() => {
