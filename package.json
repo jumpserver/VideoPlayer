@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build && electron-builder --linux --mac --win",
     "build:mac": "vite build && electron-builder --mac",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "patch-package"
   },
   "build": {
     "asar": true,
@@ -103,6 +104,7 @@
     "electron-builder": "^24.13.3",
     "eslint": "^9.9.1",
     "naive-ui": "^2.41.0",
+    "patch-package": "^8.0.1",
     "prettier": "^3.3.3",
     "sass": "^1.78.0",
     "typescript": "^5.5.3",

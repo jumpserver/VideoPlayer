@@ -1,0 +1,72 @@
+diff --git a/node_modules/guacamole-common-js-jumpserver/dist/guacamole-common.js b/node_modules/guacamole-common-js-jumpserver/dist/guacamole-common.js
+index 542c77b..4d9e4bf 100644
+--- a/node_modules/guacamole-common-js-jumpserver/dist/guacamole-common.js
++++ b/node_modules/guacamole-common-js-jumpserver/dist/guacamole-common.js
+@@ -10679,6 +10679,14 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
+      */
+     var seekTimeout = null;
+ 
++    /**
++     * 播放倍速，1 为正常速度。
++     *
++     * @private
++     * @type {Number}
++     */
++    var playbackSpeed = 1;
++
+     // Start playback client connected
+     playbackClient.connect();
+ 
+@@ -10931,8 +10939,8 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
+             var next = frames[currentFrame + 1];
+ 
+             // Calculate the real timestamp corresponding to when the next
+-            // frame begins
+-            var nextRealTimestamp = next.timestamp - startVideoTimestamp + startRealTimestamp;
++            // frame begins (scaled by playback speed)
++            var nextRealTimestamp = (next.timestamp - startVideoTimestamp) / playbackSpeed + startRealTimestamp;
+ 
+             // Calculate the relative delay between the current time and
+             // the next frame start
+@@ -11167,6 +11175,41 @@ Guacamole.SessionRecording = function SessionRecording(tunnel) {
+ 
+     };
+ 
++    /**
++     * 设置播放倍速。播放过程中切换时会重新校准时间轴，避免进度跳变。
++     *
++     * @param {Number} rate
++     *     倍速值，有效范围 0.25 ~ 4。
++     */
++    this.setSpeed = function setSpeed(rate) {
++
++        var newRate = Math.max(0.25, Math.min(rate, 4));
++        if (newRate === playbackSpeed)
++            return;
++
++        var wasPlaying = recording.isPlaying();
++        if (wasPlaying) {
++            abortSeek();
++            startVideoTimestamp = frames[currentFrame].timestamp;
++            startRealTimestamp = new Date().getTime();
++            playbackSpeed = newRate;
++            continuePlayback();
++        }
++        else
++            playbackSpeed = newRate;
++
++    };
++
++    /**
++     * 获取当前播放倍速。
++     *
++     * @returns {Number}
++     *     当前倍速值。
++     */
++    this.getSpeed = function getSpeed() {
++        return playbackSpeed;
++    };
++
+ };
+ 
+ /**

@@ -15,4 +15,5 @@ export default {
   videoInformation: '视频信息：',
   toggleLangSuccess: '语言已更改',
   scalingRatio: '缩放比',
+  playbackSpeed: '播放速率',
 };
